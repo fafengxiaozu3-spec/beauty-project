@@ -1,0 +1,102 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f6f7fb;
+}
+
+/* layout */
+.layout {
+    display: flex;
+}
+
+/* ===================== */
+/* Sidebar（玻璃感） */
+/* ===================== */
+.sidebar {
+    width: 240px;
+    height: 100vh;
+
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+
+    border-right: 1px solid rgba(0,0,0,0.05);
+    padding: 25px;
+    position: fixed;
+}
+
+/* ===================== */
+/* Logo（回首頁） */
+/* ===================== */
+.sidebar .logo {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    display: block;
+
+    text-decoration: none;
+    color: #222;
+
+    /* 不要互動效果 */
+    pointer-events: auto;
+}
+
+/* logo 不要 hover 變色 */
+.sidebar .logo:hover {
+    background: transparent;
+    color: #222;
+}
+
+/* ===================== */
+/* menu item */
+/* ===================== */
+.sidebar a {
+    display: block;
+    margin: 12px 0;
+    text-decoration: none;
+
+    color: #444;
+    padding: 10px;
+    border-radius: 10px;
+
+    transition: 0.2s;
+}
+
+/* hover（只作用在 menu） */
+.sidebar a:hover {
+    background: rgba(255, 228, 236, 0.6);
+}
+
+/* active page */
+.sidebar a.active {
+    background: #ffccd5;
+    color: #000;
+}
+
+/* ===================== */
+/* main content */
+/* ===================== */
+.main {
+    margin-left: 260px;
+    padding: 50px;
+}
+
+/* dashboard */
+.info-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.info-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    width: 160px;
+    text-align: center;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+
+.info-box:hover {
+    transform: translateY(-5px);
+}
