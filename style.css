@@ -4,29 +4,29 @@ body {
     background: #f6f7fb;
 }
 
-/* layout */
+/* Layout */
 .layout {
     display: flex;
 }
 
 /* ===================== */
-/* Sidebar（玻璃感） */
+/* Sidebar */
 /* ===================== */
 .sidebar {
     width: 240px;
     height: 100vh;
-
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
 
     border-right: 1px solid rgba(0,0,0,0.05);
+
     padding: 25px;
     position: fixed;
+
+    box-sizing: border-box;
 }
 
-/* ===================== */
-/* Logo（回首頁） */
-/* ===================== */
+/* Logo */
 .sidebar .logo {
     font-size: 22px;
     font-weight: 600;
@@ -35,20 +35,14 @@ body {
 
     text-decoration: none;
     color: #222;
-
-    /* 不要互動效果 */
-    pointer-events: auto;
 }
 
-/* logo 不要 hover 變色 */
 .sidebar .logo:hover {
     background: transparent;
     color: #222;
 }
 
-/* ===================== */
-/* menu item */
-/* ===================== */
+/* Menu */
 .sidebar a {
     display: block;
     margin: 12px 0;
@@ -61,26 +55,22 @@ body {
     transition: 0.2s;
 }
 
-/* hover（只作用在 menu） */
 .sidebar a:hover {
     background: rgba(255, 228, 236, 0.6);
 }
 
-/* active page */
 .sidebar a.active {
     background: #ffccd5;
     color: #000;
 }
 
-/* ===================== */
-/* main content */
-/* ===================== */
+/* Main */
 .main {
     margin-left: 260px;
     padding: 50px;
 }
 
-/* dashboard */
+/* Dashboard */
 .info-grid {
     display: flex;
     gap: 20px;
@@ -94,6 +84,7 @@ body {
     text-align: center;
 
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+
     transition: 0.3s;
 }
 
@@ -102,27 +93,57 @@ body {
 }
 
 /* ===================== */
+/* 漢堡按鈕 */
+/* ===================== */
+.menu-btn {
+    display: none;
+
+    position: fixed;
+    top: 15px;
+    left: 15px;
+
+    z-index: 2000;
+
+    border: none;
+    background: #ffccd5;
+
+    padding: 10px 15px;
+    border-radius: 10px;
+
+    font-size: 24px;
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ===================== */
 /* 手機版 */
 /* ===================== */
 @media screen and (max-width: 768px) {
 
-    .layout {
-        flex-direction: column;
+    .menu-btn {
+        display: block;
     }
 
     .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        padding: 15px;
-        border-right: none;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        box-sizing: border-box;
+        left: -260px;
+        top: 0;
+
+        width: 240px;
+        height: 100vh;
+
+        transition: 0.3s;
+
+        z-index: 1500;
+    }
+
+    .sidebar.show {
+        left: 0;
     }
 
     .main {
         margin-left: 0;
-        padding: 20px;
+        padding: 80px 20px 20px;
     }
 
     .info-grid {
@@ -133,9 +154,5 @@ body {
     .info-box {
         width: 100%;
         box-sizing: border-box;
-    }
-
-    .sidebar a {
-        margin: 8px 0;
     }
 }
