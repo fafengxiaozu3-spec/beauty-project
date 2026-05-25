@@ -10,12 +10,13 @@ body {
 }
 
 /* ===================== */
-/* Sidebar */
+/* Sidebar（電腦版） */
 /* ===================== */
 .sidebar {
     width: 240px;
     height: 100vh;
-    background: rgba(255, 255, 255, 0.8);
+
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
 
     border-right: 1px solid rgba(0,0,0,0.05);
@@ -64,7 +65,9 @@ body {
     color: #000;
 }
 
+/* ===================== */
 /* Main */
+/* ===================== */
 .main {
     margin-left: 260px;
     padding: 50px;
@@ -84,7 +87,6 @@ body {
     text-align: center;
 
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-
     transition: 0.3s;
 }
 
@@ -93,7 +95,7 @@ body {
 }
 
 /* ===================== */
-/* 漢堡按鈕 */
+/* 漢堡按鈕（升級版） */
 /* ===================== */
 .menu-btn {
     display: none;
@@ -102,18 +104,42 @@ body {
     top: 15px;
     left: 15px;
 
-    z-index: 2000;
+    z-index: 3000;
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
 
     border: none;
-    background: #ffccd5;
+    background: white;
 
-    padding: 10px 15px;
-    border-radius: 10px;
-
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* ===================== */
+/* 遮罩（新增） */
+/* ===================== */
+.overlay {
+    display: none;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.4);
+
+    z-index: 1500;
+}
+
+.overlay.show {
+    display: block;
 }
 
 /* ===================== */
@@ -126,15 +152,17 @@ body {
     }
 
     .sidebar {
-        left: -260px;
+        position: fixed;
+
         top: 0;
+        left: -260px;
 
         width: 240px;
         height: 100vh;
 
-        transition: 0.3s;
+        transition: 0.3s ease;
 
-        z-index: 1500;
+        z-index: 2000;
     }
 
     .sidebar.show {

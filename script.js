@@ -1,7 +1,7 @@
 function toggleMenu() {
     const sidebar = document.getElementById("sidebar");
+    const overlay = document.querySelector(".overlay");
 
-    if (sidebar) {
-        sidebar.classList.toggle("show");
-    }
+    sidebar.classList.toggle("show");
+    overlay.classList.toggle("show");
 }
