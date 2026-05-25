@@ -100,3 +100,42 @@ body {
 .info-box:hover {
     transform: translateY(-5px);
 }
+
+/* ===================== */
+/* 手機版 */
+/* ===================== */
+@media screen and (max-width: 768px) {
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        box-sizing: border-box;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .info-grid {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .info-box {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sidebar a {
+        margin: 8px 0;
+    }
+}
