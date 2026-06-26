@@ -183,243 +183,225 @@
   }
 }
 
-/* 全域 */
-body{
-  margin:0;
-  font-family:'Poppins',sans-serif;
-  background:#f6f7fb;
+/* =========================
+   全域
+========================= */
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f6f7fb;
 }
 
-*{
-  box-sizing:border-box;
+* {
+  box-sizing: border-box;
 }
 
-.layout{
-  display:flex;
+/* =========================
+   Layout
+========================= */
+
+.layout {
+  display: flex;
 }
 
-/* ================= */
-/* Sidebar 電腦版 */
-/* ================= */
+/* =========================
+   Sidebar
+========================= */
 
-.sidebar{
-  width:240px;
-  height:100vh;
+.sidebar {
+  width: 240px;
+  height: 100vh;
 
-  background:rgba(255,255,255,.85);
-  backdrop-filter:blur(12px);
+  position: fixed;
+  left: 0;
 
-  border-right:1px solid rgba(0,0,0,.05);
+  padding: 25px;
 
-  padding:25px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
 
-  position:fixed;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
 
-  left:0;
-
-  z-index:2000;
-
-  transition:.3s ease;
+  z-index: 2000;
 }
 
-/* Logo */
+/* logo */
+.sidebar .logo {
+  display: block;
+  margin-bottom: 30px;
 
-.logo{
-  display:block;
+  font-size: 22px;
+  font-weight: 600;
 
-  margin-bottom:30px;
-
-  font-size:22px;
-
-  color:#222;
-
-  text-decoration:none;
-
-  font-weight:600;
+  color: #222;
+  text-decoration: none;
 }
 
-.logo:hover{
-  color:#222;
+/* links */
+.sidebar a {
+  display: block;
+
+  margin: 12px 0;
+  padding: 10px;
+
+  text-decoration: none;
+  color: #444;
+
+  border-radius: 10px;
+
+  transition: 0.2s;
 }
 
-/* Menu */
-
-.sidebar a{
-  display:block;
-
-  margin:12px 0;
-
-  padding:10px;
-
-  color:#444;
-
-  border-radius:10px;
-
-  text-decoration:none;
-
-  transition:.2s;
+.sidebar a:hover {
+  background: rgba(255, 228, 236, 0.6);
 }
 
-.sidebar a:hover{
-  background:rgba(255,228,236,.6);
+.sidebar a.active {
+  background: #ffccd5;
+  color: #000;
 }
 
-.sidebar a.active{
-  background:#ffccd5;
+/* =========================
+   Main
+========================= */
+
+.main {
+  margin-left: 260px;
+  padding: 50px;
+  width: 100%;
 }
 
-/* ================= */
-/* Main */
-/* ================= */
+/* =========================
+   Dashboard cards
+========================= */
 
-.main{
-  margin-left:260px;
-
-  padding:50px;
-
-  width:100%;
+.info-grid {
+  display: flex;
+  gap: 20px;
 }
 
-/* Dashboard */
+.info-box {
+  width: 160px;
+  height: 160px;
 
-.info-grid{
-  display:flex;
+  background: white;
+  border-radius: 16px;
 
-  gap:20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+
+  transition: 0.3s;
 }
 
-.info-box{
-  background:white;
-
-  padding:25px;
-
-  width:160px;
-
-  border-radius:15px;
-
-  text-align:center;
-
-  box-shadow:
-  0 10px 25px rgba(0,0,0,.05);
-
-  transition:.3s;
+.info-box:hover {
+  transform: translateY(-5px);
 }
 
-.info-box:hover{
-  transform:
-  translateY(-5px);
+/* =========================
+   漢堡按鈕
+========================= */
+
+.menu-btn {
+  display: none;
+
+  position: fixed;
+  top: 15px;
+  left: 15px;
+
+  width: 45px;
+  height: 45px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: white;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  z-index: 3000;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
-/* ================= */
-/* 漢堡 */
-/* ================= */
+/* =========================
+   overlay
+========================= */
 
-.menu-btn{
+.overlay {
+  display: none;
 
-  display:none;
+  position: fixed;
+  inset: 0;
 
-  position:fixed;
+  background: rgba(0, 0, 0, 0.4);
 
-  top:15px;
-
-  left:15px;
-
-  width:45px;
-
-  height:45px;
-
-  border:none;
-
-  border-radius:50%;
-
-  background:white;
-
-  cursor:pointer;
-
-  z-index:3000;
-
-  box-shadow:
-  0 6px 18px rgba(0,0,0,.12);
+  z-index: 1500;
 }
 
-/* overlay */
-
-.overlay{
-  display:none;
-
-  position:fixed;
-
-  inset:0;
-
-  background:
-  rgba(0,0,0,.4);
-
-  z-index:1500;
+.overlay.show {
+  display: block;
 }
 
-.overlay.show{
-  display:block;
+/* close btn */
+.close-btn {
+  display: none;
+
+  position: absolute;
+  top: 15px;
+  right: 15px;
+
+  font-size: 22px;
+
+  background: none;
+  border: none;
+
+  cursor: pointer;
 }
 
-.close-btn{
-  display:none;
+/* =========================
+   手機版
+========================= */
 
-  position:absolute;
+@media (max-width: 768px) {
 
-  top:15px;
+  .menu-btn {
+    display: block;
+  }
 
-  right:15px;
+  .sidebar {
+    left: -260px;
+    transition: 0.3s ease;
+  }
 
-  border:none;
+  .sidebar.show {
+    left: 0;
+  }
 
-  background:none;
+  .main {
+    margin-left: 0;
+    padding: 80px 20px;
+  }
 
-  cursor:pointer;
+  .info-grid {
+    overflow-x: auto;
+    gap: 15px;
+  }
 
-  font-size:22px;
-}
+  .info-box {
+    width: 120px;
+    height: 120px;
+  }
 
-/* ================= */
-/* 手機 */
-/* ================= */
-
-@media(max-width:768px){
-
-.menu-btn{
-display:block;
-}
-
-.sidebar{
-
-left:-260px;
-
-}
-
-.sidebar.show{
-
-left:0;
-
-}
-
-.main{
-
-margin-left:0;
-
-padding:
-80px 20px;
-
-}
-
-.close-btn{
-
-display:block;
-
-}
-
-.info-grid{
-
-overflow-x:auto;
-
-}
-
+  .close-btn {
+    display: block;
+  }
 }
