@@ -10,6 +10,7 @@ function Home() {
 
   return (
     <div className="layout">
+
       <Sidebar
         active="home"
         menuOpen={menuOpen}
@@ -24,6 +25,7 @@ function Home() {
         </p>
 
         <div className="info-grid">
+
           <div className="info-box">
             <p>化妝品數量</p>
             <h3>12</h3>
@@ -38,8 +40,10 @@ function Home() {
             <p>即將過期</p>
             <h3>3</h3>
           </div>
+
         </div>
       </div>
+
     </div>
   );
 }
