@@ -1,0 +1,7 @@
+flask
+flask-cors
+gunicorn
+python-dateutil
+line-bot-sdk
+pymongo
+python-dotenv
