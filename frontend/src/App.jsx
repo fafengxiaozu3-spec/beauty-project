@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import AuthGuard from "./components/AuthGuard";
-
 import Home from "./pages/Home";
 import Cosmetics from "./pages/Cosmetics";
 import Expiry from "./pages/Expiry";
@@ -14,51 +12,34 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
         <Route
           path="/cosmetics"
-          element={
-            <AuthGuard>
-              <Cosmetics />
-            </AuthGuard>
-          }
+          element={<Cosmetics />}
         />
 
         <Route
           path="/skincare"
-          element={
-            <AuthGuard>
-              <Skincare />
-            </AuthGuard>
-          }
+          element={<Skincare />}
         />
 
         <Route
           path="/palette"
-          element={
-            <AuthGuard>
-              <Palette />
-            </AuthGuard>
-          }
+          element={<Palette />}
         />
 
         <Route
           path="/shopping"
-          element={
-            <AuthGuard>
-              <Shopping />
-            </AuthGuard>
-          }
+          element={<Shopping />}
         />
 
         <Route
           path="/expiry"
-          element={
-            <AuthGuard>
-              <Expiry />
-            </AuthGuard>
-          }
+          element={<Expiry />}
         />
 
       </Routes>

@@ -1,16 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { initLiff } from "../services/liff";
 
 function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] =
+    useState(false);
 
   function toggleMenu() {
-    setMenuOpen(prev => !prev);
+    setMenuOpen((prev) => !prev);
   }
+
+  useEffect(() => {
+    initLiff();
+  }, []);
 
   return (
     <div className="layout">
-
       <Sidebar
         active="home"
         menuOpen={menuOpen}
@@ -25,7 +30,6 @@ function Home() {
         </p>
 
         <div className="info-grid">
-
           <div className="info-box">
             <p>化妝品數量</p>
             <h3>12</h3>
@@ -40,10 +44,8 @@ function Home() {
             <p>即將過期</p>
             <h3>3</h3>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }

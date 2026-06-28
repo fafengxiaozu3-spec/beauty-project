@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { initLiff } from "../services/liff";
 
 function Expiry() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   function toggleMenu() {
-    setMenuOpen(prev => !prev);
+    setMenuOpen((prev) => !prev);
   }
+
+  useEffect(() => {
+    initLiff();
+  }, []);
 
   return (
     <div className="layout">
-
       <Sidebar
         active="expiry"
         menuOpen={menuOpen}
@@ -18,10 +22,9 @@ function Expiry() {
       />
 
       <div className="main">
-        <h1>即將過期的商品⚠️</h1>
+        <h1>即將過期⏰</h1>
         <p>內容</p>
       </div>
-
     </div>
   );
 }
