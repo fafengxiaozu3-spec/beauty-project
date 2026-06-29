@@ -4,52 +4,97 @@ import { initLiff } from "../services/liff";
 
 function Cosmetics() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [showForm, setShowForm] = useState(false);
 
-  const [products, setProducts] =
-    useState([]);
+  const [form, setForm] = useState({
+    product_name: "",
+    brand: "",
+    category: "",
+    open_date: "",
+    expire_months: ""
+  });
 
   function toggleMenu() {
     setMenuOpen(prev => !prev);
   }
 
   useEffect(() => {
-
     async function start() {
-
-      const profile =
-        await initLiff();
-
+      const profile = await initLiff();
       if (!profile) return;
 
-      loadProducts(
-        profile.userId
-      );
-
+      loadProducts(profile.userId);
     }
 
     start();
-
   }, []);
 
-  async function loadProducts(
-    userId
-  ) {
+  async function loadProducts(userId) {
     try {
+      const res = await fetch(
+        `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
+      );
 
-      const res =
-        await fetch(
-          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
-        );
-
-      const data =
-        await res.json();
-
+      const data = await res.json();
       setProducts(data);
 
     } catch (err) {
+      console.log(err);
+    }
+  }
 
-      console.log("載入失敗", err);
+  function handleChange(e) {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  }
 
+  async function createProduct() {
+    try {
+      const userId = localStorage.getItem("lineUserId");
+
+      const expire = new Date(form.open_date);
+      expire.setMonth(
+        expire.getMonth() +
+        Number(form.expire_months)
+      );
+
+      await fetch(
+        "https://mybeautystudio-backend.onrender.com/api/products",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            ...form,
+            user_id: userId,
+            expire_date:
+              expire
+                .toISOString()
+                .split("T")[0]
+          })
+        }
+      );
+
+      setShowForm(false);
+
+      setForm({
+        product_name: "",
+        brand: "",
+        category: "",
+        open_date: "",
+        expire_months: ""
+      });
+
+      loadProducts(userId);
+
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -66,37 +111,68 @@ function Cosmetics() {
 
         <h1>我的化妝品💄</h1>
 
-        {products.length === 0 ? (
+        <div className="info-grid">
+          {products.map(item => (
+            <div
+              key={item._id}
+              className="info-box"
+            >
+              <h3>{item.product_name}</h3>
+              <p>{item.brand}</p>
+            </div>
+          ))}
+        </div>
 
-          <p>尚未新增商品</p>
+        <button
+          className="add-btn"
+          onClick={() =>
+            setShowForm(true)
+          }
+        >
+          ＋
+        </button>
 
-        ) : (
+        {showForm && (
+          <div className="popup">
 
-          <div className="info-grid">
+            <input
+              name="product_name"
+              placeholder="名稱"
+              onChange={handleChange}
+            />
 
-            {products.map(
-              (item) => (
+            <input
+              name="brand"
+              placeholder="品牌"
+              onChange={handleChange}
+            />
 
-                <div
-                  key={item._id}
-                  className="info-box"
-                >
+            <input
+              name="category"
+              placeholder="分類"
+              onChange={handleChange}
+            />
 
-                  <h3>
-                    {item.product_name}
-                  </h3>
+            <input
+              type="date"
+              name="open_date"
+              onChange={handleChange}
+            />
 
-                  <p>
-                    {item.brand}
-                  </p>
+            <input
+              type="number"
+              name="expire_months"
+              placeholder="保存(月)"
+              onChange={handleChange}
+            />
 
-                </div>
-
-              )
-            )}
+            <button
+              onClick={createProduct}
+            >
+              新增
+            </button>
 
           </div>
-
         )}
 
       </div>

@@ -405,3 +405,39 @@ body {
     display: block;
   }
 }
+
+/* =========================
+  Cosmetics.jsx
+========================= */
+.add-btn{
+position:fixed;
+right:25px;
+bottom:25px;
+
+width:65px;
+height:65px;
+
+border:none;
+border-radius:50%;
+
+font-size:36px;
+cursor:pointer;
+}
+
+.popup{
+position:fixed;
+
+right:110px;
+bottom:35px;
+
+background:white;
+
+padding:20px;
+
+border-radius:20px;
+
+display:flex;
+flex-direction:column;
+
+gap:10px;
+}
