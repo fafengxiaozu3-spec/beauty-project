@@ -127,14 +127,14 @@ function Cosmetics() {
       />
       {showForm && (
         <div
-          className="overlay"
+          className="popup-overlay"
           onClick={() => setShowForm(false)}
         />
       )}
 
       {showMenu && (
         <div
-          className="overlay"
+          className="popup-overlay"
           onClick={() => setShowMenu(false)}
         />
       )}
