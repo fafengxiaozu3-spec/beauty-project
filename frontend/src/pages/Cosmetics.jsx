@@ -125,6 +125,19 @@ function Cosmetics() {
         menuOpen={menuOpen}
         toggleMenu={toggleMenu}
       />
+      {showForm && (
+        <div
+          className="overlay"
+          onClick={() => setShowForm(false)}
+        />
+      )}
+
+      {showMenu && (
+        <div
+          className="overlay"
+          onClick={() => setShowMenu(false)}
+        />
+      )}
 
       <div className="main">
 
@@ -156,7 +169,10 @@ function Cosmetics() {
         </button>
 
         {showMenu && (
-          <div className="popup-menu">
+          <div
+            className="popup-menu"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             <button
               onClick={() => {
@@ -171,15 +187,14 @@ function Cosmetics() {
               🗑️ 刪除
             </button>
 
-            <button onClick={() => setShowMenu(false)}>
-              取消
-            </button>
-
           </div>
         )}
 
         {showForm && (
-          <div className="popup">
+          <div
+            className="popup"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             <input
               name="product_name"
