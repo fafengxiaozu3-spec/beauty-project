@@ -425,19 +425,36 @@ cursor:pointer;
 }
 
 .popup{
-position:fixed;
+  position:fixed;
 
-right:110px;
-bottom:35px;
+  right:110px;
+  bottom:35px;
 
-background:white;
+  background:white;
 
-padding:20px;
+  padding:20px;
 
-border-radius:20px;
+  border-radius:20px;
 
-display:flex;
-flex-direction:column;
+  display:flex;
+  flex-direction:column;
 
-gap:10px;
+  gap:10px;
+}
+
+.popup-menu{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+
+  background:#fff;
+  padding:20px;
+  border-radius:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  box-shadow:0 0 15px rgba(0,0,0,.2);
 }

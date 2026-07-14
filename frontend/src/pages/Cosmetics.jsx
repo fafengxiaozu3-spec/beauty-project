@@ -6,6 +6,8 @@ function Cosmetics() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [form, setForm] = useState({
     product_name: "",
@@ -98,6 +100,23 @@ function Cosmetics() {
     }
   }
 
+  async function deleteProduct() {
+    try {
+      await fetch(
+        `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct._id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      loadProducts(localStorage.getItem("lineUserId"));
+      setShowMenu(false);
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div className="layout">
 
@@ -116,6 +135,10 @@ function Cosmetics() {
             <div
               key={item._id}
               className="info-box"
+              onClick={() => {
+                setSelectedProduct(item);
+                setShowMenu(true);
+              }}
             >
               <h3>{item.product_name}</h3>
               <p>{item.brand}</p>
@@ -131,6 +154,29 @@ function Cosmetics() {
         >
           ＋
         </button>
+
+        {showMenu && (
+          <div className="popup-menu">
+
+            <button
+              onClick={() => {
+                setShowMenu(false);
+                // 之後做編輯
+              }}
+            >
+              ✏️ 編輯
+            </button>
+
+            <button onClick={deleteProduct}>
+              🗑️ 刪除
+            </button>
+
+            <button onClick={() => setShowMenu(false)}>
+              取消
+            </button>
+
+          </div>
+        )}
 
         {showForm && (
           <div className="popup">
