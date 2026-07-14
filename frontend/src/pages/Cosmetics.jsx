@@ -101,6 +101,13 @@ function Cosmetics() {
   }
 
   async function deleteProduct() {
+
+    const confirmDelete = window.confirm(
+      `確定要刪除 ${selectedProduct.brand} ${selectedProduct.product_name} 嗎？`
+    );
+
+    if (!confirmDelete) return;
+
     try {
       await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct._id}`,
@@ -148,11 +155,17 @@ function Cosmetics() {
             <div
               key={item._id}
               className="info-box"
-              onClick={() => {
-                setSelectedProduct(item);
-                setShowMenu(true);
-              }}
             >
+              <button
+                className="more-btn"
+                onClick={() => {
+                  setSelectedProduct(item);
+                  setShowMenu(true);
+                }}
+              >
+                ⋮
+              </button>
+
               <h3>{item.product_name}</h3>
               <p>{item.brand}</p>
             </div>

@@ -298,6 +298,8 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 
   transition: 0.3s;
+
+  position:relative;
 }
 
 .info-box:hover {
@@ -470,4 +472,18 @@ z-index:900;
 .popup,
 .popup-menu{
   z-index:999;
+}
+
+.more-btn{
+  position:absolute;
+  top:8px;
+  right:10px;
+
+  border:none;
+  background:none;
+
+  font-size:24px;
+  cursor:pointer;
+
+  color:#555;
 }
