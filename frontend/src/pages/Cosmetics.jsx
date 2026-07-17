@@ -245,6 +245,8 @@ function Cosmetics() {
                   expire_date: selectedProduct.expire_date || ""
                 });
 
+                setDateMode(selectedProduct.date_mode || "manufacture");
+
                 setEditMode(true);
                 setShowMenu(false);
                 setShowForm(true);
@@ -268,24 +270,28 @@ function Cosmetics() {
 
             <input
               name="product_name"
+              value={form.product_name}
               placeholder="名稱"
               onChange={handleChange}
             />
 
             <input
               name="brand"
+              value={form.brand}
               placeholder="品牌"
               onChange={handleChange}
             />
 
             <input
               name="shade"
+              value={form.shade}
               placeholder="色號"
               onChange={handleChange}
             />
 
             <input
               name="category"
+              value={form.category}
               placeholder="分類"
               onChange={handleChange}
             />
@@ -308,6 +314,7 @@ function Cosmetics() {
                 <input
                   type="date"
                   name="manufacture_date"
+                  name="manufacture_date"
                   onChange={handleChange}
                 />
 
@@ -322,6 +329,7 @@ function Cosmetics() {
               <input
                 type="date"
                 name="expire_date"
+                value={form.expire_date}
                 onChange={handleChange}
               />
             )}
