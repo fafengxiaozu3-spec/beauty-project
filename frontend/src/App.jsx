@@ -23,7 +23,7 @@ function App() {
   }, []);
 
   if (loading) {
-    retur(
+    return(
       <div className="loading-screen">
 
       <div className="loading-logo">
@@ -34,6 +34,7 @@ function App() {
 
       <div className="loading-text">
         正在登入 LINE...
+        <br />
         請稍候
       </div>
 
