@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>我的產品｜美妝保母</title>
+</head>
+<body>
+    <h1>我的美妝產品</h1>
+
+    <p>
+        <a href="/products/new">新增產品</a>
+    </p>
+
+    {% if products %}
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>ID</th>
+                <th>產品名稱</th>
+                <th>品牌</th>
+                <th>類別</th>
+                <th>開封日期</th>
+                <th>保存月數</th>
+                <th>到期日</th>
+                <th>操作</th>
+            </tr>
+
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.open_date }}</td>
+                <td>{{ product.expire_months }}</td>
+                <td>{{ product.expire_date }}</td>
+                <td>
+                    <form action="/products/delete/{{ product.id }}" method="post">
+                        <button type="submit">刪除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>目前還沒有新增任何產品。</p>
+    {% endif %}
+</body>
+</html>

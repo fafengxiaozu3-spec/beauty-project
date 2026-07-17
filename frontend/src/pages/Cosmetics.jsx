@@ -13,9 +13,13 @@ function Cosmetics() {
     product_name: "",
     brand: "",
     category: "",
-    open_date: "",
-    expire_months: ""
+    shade: "",
+    manufacture_date: "",
+    expire_months: "",
+    expire_date: ""
   });
+
+  const [dateMode, setDateMode] = useState("manufacture");
 
   function toggleMenu() {
     setMenuOpen(prev => !prev);
@@ -57,12 +61,6 @@ function Cosmetics() {
     try {
       const userId = localStorage.getItem("lineUserId");
 
-      const expire = new Date(form.open_date);
-      expire.setMonth(
-        expire.getMonth() +
-        Number(form.expire_months)
-      );
-
       await fetch(
         "https://mybeautystudio-backend.onrender.com/api/products",
         {
@@ -73,12 +71,31 @@ function Cosmetics() {
           },
 
           body: JSON.stringify({
-            ...form,
+
             user_id: userId,
+
+            product_name: form.product_name,
+            brand: form.brand,
+            category: form.category,
+            shade: form.shade,
+
+            date_mode: dateMode,
+
+            manufacture_date:
+              dateMode==="manufacture"
+                ? form.manufacture_date
+                : null,
+
+            expire_months:
+              dateMode==="manufacture"
+                ? Number(form.expire_months)
+                : null,
+
             expire_date:
-              expire
-                .toISOString()
-                .split("T")[0]
+              dateMode==="direct"
+                ? form.expire_date
+                : null
+
           })
         }
       );
@@ -89,9 +106,13 @@ function Cosmetics() {
         product_name: "",
         brand: "",
         category: "",
-        open_date: "",
-        expire_months: ""
+        shade: "",
+        manufacture_date: "",
+        expire_months: "",
+        expire_date: ""
       });
+
+      setDateMode("manufacture");
 
       loadProducts(userId);
 
@@ -110,7 +131,7 @@ function Cosmetics() {
 
     try {
       await fetch(
-        `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct._id}`,
+        `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
         {
           method: "DELETE"
         }
@@ -153,7 +174,7 @@ function Cosmetics() {
         <div className="info-grid">
           {products.map(item => (
             <div
-              key={item._id}
+              key={item.id}
               className="info-box"
             >
               <button
@@ -222,23 +243,52 @@ function Cosmetics() {
             />
 
             <input
+              name="shade"
+              placeholder="色號"
+              onChange={handleChange}
+            />
+
+            <input
               name="category"
               placeholder="分類"
               onChange={handleChange}
             />
 
-            <input
-              type="date"
-              name="open_date"
-              onChange={handleChange}
-            />
+            <select
+              value={dateMode}
+              onChange={(e)=>setDateMode(e.target.value)}
+            >
+              <option value="manufacture">
+                製造日期 + 保存期限
+              </option>
 
-            <input
-              type="number"
-              name="expire_months"
-              placeholder="保存(月)"
-              onChange={handleChange}
-            />
+              <option value="direct">
+                直接輸入有效日期
+              </option>
+            </select>
+
+            {dateMode==="manufacture" ? (
+              <>
+                <input
+                  type="date"
+                  name="manufacture_date"
+                  onChange={handleChange}
+                />
+
+                <input
+                  type="number"
+                  name="expire_months"
+                  placeholder="保存(月)"
+                  onChange={handleChange}
+                />
+              </>
+            ) : (
+              <input
+                type="date"
+                name="expire_date"
+                onChange={handleChange}
+              />
+            )}
 
             <button
               onClick={createProduct}
