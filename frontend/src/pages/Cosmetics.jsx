@@ -8,6 +8,7 @@ function Cosmetics() {
   const [showForm, setShowForm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editMode, setEditMode] = useState(false);
 
   const [form, setForm] = useState({
     product_name: "",
@@ -146,6 +147,29 @@ function Cosmetics() {
     }
   }
 
+  async function updateProduct() {
+    try {
+      await fetch(
+        `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(form)
+        }
+      );
+
+      loadProducts(localStorage.getItem("lineUserId"));
+
+      setEditMode(false);
+      setShowForm(false);
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div className="layout">
 
@@ -211,8 +235,19 @@ function Cosmetics() {
 
             <button
               onClick={() => {
+                setForm({
+                  product_name: selectedProduct.product_name,
+                  brand: selectedProduct.brand,
+                  category: selectedProduct.category,
+                  shade: selectedProduct.shade || "",
+                  manufacture_date: selectedProduct.manufacture_date || "",
+                  expire_months: selectedProduct.expire_months || "",
+                  expire_date: selectedProduct.expire_date || ""
+                });
+
+                setEditMode(true);
                 setShowMenu(false);
-                // 之後做編輯
+                setShowForm(true);
               }}
             >
               ✏️ 編輯
@@ -292,9 +327,9 @@ function Cosmetics() {
             )}
 
             <button
-              onClick={createProduct}
+              onClick={editMode ? updateProduct : createProduct}
             >
-              新增
+              {editMode ? "儲存修改" : "新增"}
             </button>
 
           </div>
