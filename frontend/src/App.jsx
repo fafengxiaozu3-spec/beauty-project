@@ -23,7 +23,22 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div>登入中...</div>;
+    retur(
+      <div className="loading-screen">
+
+      <div className="loading-logo">
+        你的美妝管理 💄
+      </div>
+
+      <div className="loading-circle"></div>
+
+      <div className="loading-text">
+        正在登入 LINE...
+        請稍候
+      </div>
+
+    </div>
+    )
   }
 
   return (
