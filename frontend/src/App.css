@@ -412,60 +412,64 @@ body {
   loading
 ========================= */
 .loading-screen {
-  width:100vw;
-  height:100vh;
+  width: 100vw;
+  height: 100vh;
 
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-  background:#fff5f8;
-
-  font-family:'Poppins',sans-serif;
+  background: #fff5f8;
 }
 
 
 .loading-logo {
-  font-size:45px;
-  margin-bottom:20px;
+  font-size: 28px;
+  font-weight: 600;
 
-  animation:bounce 1.2s infinite;
-}
+  color: #ff7b9c;
 
+  margin-bottom: 25px;
 
-.loading-text {
-  font-size:20px;
-  color:#777;
+  text-align: center;
 }
 
 
 .loading-circle {
-  width:40px;
-  height:40px;
+  width: 40px;
+  height: 40px;
 
-  border:4px solid #ffd6df;
-  border-top-color:#ff8fab;
+  border: 4px solid #ffd6df;
+  border-top-color: #ff8fab;
 
-  border-radius:50%;
+  border-radius: 50%;
 
-  animation:spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 
-  margin-bottom:20px;
+  margin-bottom: 20px;
+}
+
+
+.loading-text {
+  font-size: 16px;
+
+  color: #777;
+
+  text-align: center;
+
+  line-height: 1.8;
 }
 
 
 @keyframes spin {
-  to{
-    transform:rotate(360deg);
+
+  from {
+    transform: rotate(0deg);
   }
-}
 
-
-@keyframes bounce {
-
-  50%{
-    transform:translateY(-10px);
+  to {
+    transform: rotate(360deg);
   }
 
 }

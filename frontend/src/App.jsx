@@ -27,7 +27,7 @@ function App() {
       <div className="loading-screen">
 
       <div className="loading-logo">
-        你的美妝管理 💄
+        你的美妝管理💄
       </div>
 
       <div className="loading-circle"></div>
