@@ -111,7 +111,7 @@ function Cosmetics() {
         expire_months: "",
         expire_date: ""
       });
-
+      
 
       setDateMode("manufacture");
 
@@ -233,7 +233,7 @@ function Cosmetics() {
 
             <input
               name="product_name"
-              placeholder="名"
+              placeholder="名稱"
               onChange={handleChange}
             />
 
