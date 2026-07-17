@@ -111,6 +111,7 @@ function Cosmetics() {
         expire_months: "",
         expire_date: ""
       });
+      
 
       setDateMode("manufacture");
 
