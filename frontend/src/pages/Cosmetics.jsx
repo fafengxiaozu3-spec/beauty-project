@@ -248,8 +248,15 @@ function Cosmetics() {
                   ⋮
                 </button>
 
-                <h3>{item.product_name}</h3>
-                <p>{item.brand}</p>
+                <h3 className="product-name">{item.product_name}</h3>
+
+                <p className="product-brand">
+                  {item.brand}
+                </p>
+
+                <p className="product-shade">
+                  {item.shade || "-"}
+                </p>
               </div>
             ))}
           </div>
