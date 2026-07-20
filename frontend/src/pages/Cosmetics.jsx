@@ -247,10 +247,23 @@ function Cosmetics() {
 
                     const rect = e.currentTarget.getBoundingClientRect();
 
+                    const menuWidth = 100; // 編輯刪除框預估寬度
+                    const screenWidth = window.innerWidth;
+
+                    let leftPosition = rect.left - 20;
+
+
+                    // 如果右邊空間不夠，就往左移
+                    if (rect.left + menuWidth > screenWidth) {
+                      leftPosition = rect.right - menuWidth;
+                    }
+
+
                     setMenuPosition({
                       top: rect.bottom + 8,
-                      left: rect.left - 20
+                      left: leftPosition
                     });
+
 
                     setSelectedProduct(item);
                     setShowMenu(true);
