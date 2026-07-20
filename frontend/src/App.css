@@ -369,6 +369,56 @@ body {
 }
 
 /* =========================
+   手機版
+========================= */
+
+@media (max-width:768px){
+
+  .menu-btn {
+    display:block;
+
+    position:fixed;
+    top:15px;
+    left:15px;
+
+    width:45px;
+    height:45px;
+
+    border:none;
+    border-radius:50%;
+
+    background:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    z-index:3000;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.12);
+  }
+
+
+  .sidebar {
+    left:-260px;
+
+    transition:0.3s ease;
+  }
+
+
+  .sidebar.show {
+    left:0;
+  }
+
+
+  .main {
+    margin-left:0;
+    padding:80px 20px;
+  }
+
+}
+
+/* =========================
   loading
 ========================= */
 .loading-screen {
@@ -531,7 +581,7 @@ z-index:900;
   transform:scale(1.05);
 }
 
-.product-name{
+.product-name {
   margin:0;
 
   font-size:18px;
@@ -539,13 +589,11 @@ z-index:900;
 
   width:100%;
 
-  display:-webkit-box;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:2;
+  text-align:center;
 
   overflow:hidden;
-
-  text-align:center;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
 .product-brand{
