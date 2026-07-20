@@ -13,15 +13,6 @@ function Sidebar({
 
   return (
     <>
-      {!menuOpen && (
-        <button
-          className="menu-btn"
-          onClick={toggleMenu}
-        >
-          ☰
-        </button>
-      )}
-
       <div
         className={`overlay ${menuOpen ? "show" : ""}`}
         onClick={toggleMenu}

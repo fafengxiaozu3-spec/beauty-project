@@ -128,41 +128,43 @@ body {
    漢堡按鈕
 ========================= */
 
-.menu-btn {
-  display:none;
-
+.menu-btn{
   position:absolute;
 
-  top:20px;
-  left:20px;
+  left:10px;
+
+  top:50%;
+
+  transform:translateY(-50%);
 
   width:45px;
   height:45px;
 
   border:none;
+
   border-radius:50%;
 
   background:white;
 
-  font-size:20px;
+  font-size:22px;
 
   cursor:pointer;
 
-  z-index:3000;
-
-  box-shadow:0 6px 18px rgba(0,0,0,.12);
+  box-shadow:
+  0 6px 18px rgba(0,0,0,.12);
 }
 
 .page-header{
+  height:60px;
+  position:relative;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:60px;
 }
 
 .page-header h1{
-  font-size:24px;
   margin:0;
+  font-size:24px;
 }
 
 /* =========================

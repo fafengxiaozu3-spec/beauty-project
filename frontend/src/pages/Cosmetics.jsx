@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Cosmetics() {
@@ -219,11 +220,11 @@ function Cosmetics() {
         />
       )}
 
-      <div className="main">
-
-        <div className="page-header">
-        <h1>我的化妝品💄</h1>
-        </div>
+        <div className="main">
+        <Header
+          title="我的化妝品💄"
+          toggleMenu={toggleMenu}
+          />
 
         {loadingProducts ? (
 

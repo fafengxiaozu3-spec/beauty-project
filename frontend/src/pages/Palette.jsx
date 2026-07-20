@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Palette() {
@@ -20,10 +21,15 @@ function Palette() {
         menuOpen={menuOpen}
         toggleMenu={toggleMenu}
       />
-
       <div className="main">
-        <h1>我的色卡🎨</h1>
+
+        <Header
+          title="我的色卡🎨"
+          toggleMenu={toggleMenu}
+        />
+
         <p>內容</p>
+
       </div>
     </div>
   );

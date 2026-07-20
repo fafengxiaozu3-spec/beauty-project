@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Shopping() {
@@ -22,7 +23,10 @@ function Shopping() {
       />
 
       <div className="main">
-        <h1>購物清單🛒</h1>
+        <Header
+          title="購物清單🛒"
+          toggleMenu={toggleMenu}
+        />
         <p>內容</p>
       </div>
     </div>

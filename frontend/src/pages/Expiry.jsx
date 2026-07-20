@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Expiry() {
@@ -22,7 +23,11 @@ function Expiry() {
       />
 
       <div className="main">
-        <h1>即將過期⏰</h1>
+
+        <Header
+          title="即將過期⏰"
+          toggleMenu={toggleMenu}
+        />
         <p>內容</p>
       </div>
     </div>

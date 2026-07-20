@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Skincare() {
@@ -22,7 +23,11 @@ function Skincare() {
       />
 
       <div className="main">
-        <h1>我的保養品🧴</h1>
+
+         <Header
+          title="我的保養品"
+          toggleMenu={toggleMenu}
+        />
         <p>內容</p>
       </div>
     </div>
