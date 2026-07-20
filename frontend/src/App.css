@@ -276,9 +276,10 @@ body {
    Dashboard cards
 ========================= */
 
-.info-grid {
-  display: flex;
-  gap: 20px;
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
 }
 
 .info-box{
@@ -392,13 +393,12 @@ body {
   }
 
   .info-grid {
-    overflow-x: auto;
     gap: 15px;
   }
 
   .info-box {
-    width: 120px;
-    height: 120px;
+    width:100%;
+    min-height:120px;
   }
 
   .close-btn {
@@ -564,7 +564,7 @@ z-index:900;
   transition:.2s;
 }
 
-.more-btn:hover{
+.more-btn:active{
   background:#ffe4ec;
   transform:scale(1.15);
 }
@@ -586,13 +586,16 @@ z-index:900;
 
 .product-brand{
   margin:0;
+  text-align:center;
 
   color:#666;
   font-size:14px;
 }
 
+
 .product-shade{
   margin:0;
+  text-align:center;
 
   color:#999;
   font-size:13px;
