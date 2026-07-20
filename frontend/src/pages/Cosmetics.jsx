@@ -221,7 +221,9 @@ function Cosmetics() {
 
       <div className="main">
 
+        <div className="page-header">
         <h1>我的化妝品💄</h1>
+        </div>
 
         {loadingProducts ? (
 
