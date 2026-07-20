@@ -27,6 +27,22 @@ function Cosmetics() {
     setMenuOpen(prev => !prev);
   }
 
+  function resetForm() {
+    setEditMode(false);
+
+    setForm({
+      product_name: "",
+      brand: "",
+      category: "",
+      shade: "",
+      manufacture_date: "",
+      expire_months: "",
+      expire_date: ""
+    });
+
+    setDateMode("manufacture");
+  }
+
   useEffect(() => {
     async function start() {
       const profile = await initLiff();
@@ -186,7 +202,10 @@ function Cosmetics() {
       {showForm && (
         <div
           className="popup-overlay"
-          onClick={() => setShowForm(false)}
+          onClick={() => {
+            setShowForm(false);
+            resetForm();
+          }}
         />
       )}
 
@@ -239,9 +258,10 @@ function Cosmetics() {
 
         <button
           className="add-btn"
-          onClick={() =>
-            setShowForm(true)
-          }
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
         >
           ＋
         </button>
