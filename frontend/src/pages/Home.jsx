@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Home() {
@@ -23,7 +24,11 @@ function Home() {
       />
 
       <div className="main">
-        <h1>Dashboard</h1>
+
+        <Header
+          title="Dashboard"
+          toggleMenu={toggleMenu}
+        />
 
         <p className="subtitle">
           你的美妝管理中心

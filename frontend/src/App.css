@@ -128,38 +128,29 @@ body {
    漢堡按鈕
 ========================= */
 
-.menu-btn{
-  position:absolute;
-
-  left:10px;
-
-  top:50%;
-
-  transform:translateY(-50%);
-
-  width:45px;
-  height:45px;
-
-  border:none;
-
-  border-radius:50%;
-
-  background:white;
-
-  font-size:22px;
-
-  cursor:pointer;
-
-  box-shadow:
-  0 6px 18px rgba(0,0,0,.12);
-}
-
 .page-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+
   height:60px;
-  position:relative;
+
   display:flex;
   justify-content:center;
   align-items:center;
+
+  background:#f6f7fb;
+
+  z-index:1000;
+
+  transition:transform .3s ease;
+
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+.page-header.hide{
+  transform:translateY(-100%);
 }
 
 .page-header h1{
@@ -206,17 +197,18 @@ body {
    手機版
 ========================= */
 
-@media (max-width:768px){
-
-  .menu-btn {
+.menu-btn{
     display:block;
 
-    position:fixed;
-    top:15px;
-    left:15px;
+    position:absolute;
 
-    width:45px;
-    height:45px;
+    top:50%;
+    left:12px;
+
+    transform:translateY(-50%);
+
+    width:42px;
+    height:42px;
 
     border:none;
     border-radius:50%;
@@ -227,10 +219,10 @@ body {
 
     cursor:pointer;
 
-    z-index:3000;
+    z-index:1001;
 
-    box-shadow:0 6px 18px rgba(0,0,0,.12);
-  }
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
 
   .sidebar {
     left:-260px;
@@ -244,7 +236,7 @@ body {
 
   .main {
     margin-left:0;
-    padding:80px 20px 20px;
+    padding:75px 20px 20px;
     }
 
   .info-grid{
@@ -256,8 +248,6 @@ body {
   .info-box{
     height:150px;
   }
-
-}
 
 /* =========================
   loading
