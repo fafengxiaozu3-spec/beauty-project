@@ -248,7 +248,9 @@ function Cosmetics() {
                   ⋮
                 </button>
 
-                <h3 className="product-name">{item.product_name}</h3>
+                <h3 className="product-name">
+                  {item.product_name}
+                </h3>
 
                 <p className="product-brand">
                   {item.brand}
