@@ -10,7 +10,10 @@ function Cosmetics() {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
+  const [menuPosition, setMenuPosition] = useState({
+    top:0,
+    left:0
+  });
   const [form, setForm] = useState({
     product_name: "",
     brand: "",
@@ -240,9 +243,18 @@ function Cosmetics() {
               >
                 <button
                   className="more-btn"
-                  onClick={() => {
+                  onClick={(e) => {
+
+                    const rect = e.currentTarget.getBoundingClientRect();
+
+                    setMenuPosition({
+                      top: rect.bottom + 8,
+                      left: rect.left - 20
+                    });
+
                     setSelectedProduct(item);
                     setShowMenu(true);
+
                   }}
                 >
                   ⋮
@@ -278,7 +290,11 @@ function Cosmetics() {
         {showMenu && (
           <div
             className="popup-menu"
-            onClick={(e) => e.stopPropagation()}
+            style={{
+              top: menuPosition.top,
+              left: menuPosition.left
+            }}
+            onClick={(e)=>e.stopPropagation()}
           >
 
             <button
