@@ -5,6 +5,7 @@ import { initLiff } from "../services/liff";
 function Cosmetics() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -38,6 +39,8 @@ function Cosmetics() {
   }, []);
 
   async function loadProducts(userId) {
+    setLoadingProducts(true);
+
     try {
       const res = await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
@@ -48,6 +51,8 @@ function Cosmetics() {
 
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoadingProducts(false);
     }
   }
 
@@ -196,27 +201,41 @@ function Cosmetics() {
 
         <h1>我的化妝品💄</h1>
 
-        <div className="info-grid">
-          {products.map(item => (
-            <div
-              key={item.id}
-              className="info-box"
-            >
-              <button
-                className="more-btn"
-                onClick={() => {
-                  setSelectedProduct(item);
-                  setShowMenu(true);
-                }}
-              >
-                ⋮
-              </button>
+        {loadingProducts ? (
 
-              <h3>{item.product_name}</h3>
-              <p>{item.brand}</p>
-            </div>
-          ))}
-        </div>
+          <div className="product-loading">
+
+            <div className="loading-circle"></div>
+
+            <p>正在取得你的化妝品資料...</p>
+
+          </div>
+
+        ) : (
+
+          <div className="info-grid">
+            {products.map(item => (
+              <div
+                key={item.id}
+                className="info-box"
+              >
+                <button
+                  className="more-btn"
+                  onClick={() => {
+                    setSelectedProduct(item);
+                    setShowMenu(true);
+                  }}
+                >
+                  ⋮
+                </button>
+
+                <h3>{item.product_name}</h3>
+                <p>{item.brand}</p>
+              </div>
+            ))}
+          </div>
+
+        )}
 
         <button
           className="add-btn"
@@ -314,13 +333,14 @@ function Cosmetics() {
                 <input
                   type="date"
                   name="manufacture_date"
-                  name="manufacture_date"
+                  value={form.manufacture_date}
                   onChange={handleChange}
                 />
 
                 <input
                   type="number"
                   name="expire_months"
+                  value={form.expire_months}
                   placeholder="保存(月)"
                   onChange={handleChange}
                 />

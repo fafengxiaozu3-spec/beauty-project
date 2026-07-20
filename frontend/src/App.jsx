@@ -33,7 +33,7 @@ function App() {
       <div className="loading-circle"></div>
 
       <div className="loading-text">
-        正在登入 LINE...
+        正在連接 LINE 帳號...
         <br />
         請稍候
       </div>

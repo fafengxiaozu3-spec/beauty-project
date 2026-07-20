@@ -553,3 +553,21 @@ z-index:900;
 
   color:#555;
 }
+
+/* =========================
+  取得化妝品 loading
+========================= */
+.product-loading {
+  height: 60vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-loading p {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #666;
+}
