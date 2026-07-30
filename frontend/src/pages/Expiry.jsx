@@ -157,7 +157,7 @@ function Expiry() {
                   className={
                     product.daysLeft < 0
                       ? "expiry-days expired"
-                      : product.daysLeft <= 7
+                      : product.daysLeft <= 30
                       ? "expiry-days danger"
                       : "expiry-days"
                   }
