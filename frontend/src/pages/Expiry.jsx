@@ -69,13 +69,12 @@ function Expiry() {
           .filter((product) => {
             if (!product) return false;
 
-            // 已經過期的不顯示
-            if (product.daysLeft < 0) {
-              return false;
-            }
-
-            // 只顯示 6 個月內到期
-            return product.expireDate <= sixMonthsLater;
+            // 已過期的產品也顯示
+            // 或者只顯示 6 個月內即將到期的產品
+            return (
+              product.daysLeft < 0 ||
+              product.expireDate <= sixMonthsLater
+            );
           })
           // 剩餘天數少的排前面
           .sort(
@@ -156,12 +155,16 @@ function Expiry() {
 
                 <div
                   className={
-                    product.daysLeft <= 7
+                    product.daysLeft < 0
+                      ? "expiry-days expired"
+                      : product.daysLeft <= 7
                       ? "expiry-days danger"
                       : "expiry-days"
                   }
                 >
-                  {product.daysLeft}天
+                  {product.daysLeft < 0
+                    ? "已過期"
+                    : `${product.daysLeft}天`}
                 </div>
 
               </div>

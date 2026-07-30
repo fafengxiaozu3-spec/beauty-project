@@ -567,8 +567,9 @@ body {
   color: #ff8fab;
 }
 
-.expiry-days.danger {
+.expiry-days.expired {
   color: #ff3b5c;
+  font-weight: 700;
 }
 
 .expiry-empty {
