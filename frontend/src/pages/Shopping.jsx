@@ -23,6 +23,7 @@ function Shopping() {
       />
 
       <div className="main">
+
         <Header
           title="購物清單🛒"
           toggleMenu={toggleMenu}

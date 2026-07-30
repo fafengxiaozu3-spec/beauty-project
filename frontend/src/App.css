@@ -511,3 +511,97 @@ body {
   font-size: 18px;
   color: #666;
 }
+
+/* =========================
+   即將過期
+========================= */
+
+.expiry-list {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.expiry-item {
+  width: 100%;
+  min-height: 60px;
+
+  padding: 12px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #fff;
+
+  border-radius: 12px;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+
+  gap: 15px;
+}
+
+.expiry-product {
+  min-width: 0;
+  flex: 1;
+}
+
+.expiry-name {
+  font-size: 16px;
+  font-weight: 600;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.expiry-days {
+  flex-shrink: 0;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #ff8fab;
+}
+
+.expiry-days.danger {
+  color: #ff3b5c;
+}
+
+.expiry-empty {
+  width: 100%;
+
+  padding: 40px 20px;
+
+  text-align: center;
+
+  color: #777;
+}
+
+/* 手機版 */
+@media (max-width: 768px) {
+
+  .expiry-list {
+    gap: 10px;
+  }
+
+  .expiry-item {
+    min-height: 58px;
+
+    padding: 12px 15px;
+
+    border-radius: 12px;
+  }
+
+  .expiry-name {
+    font-size: 15px;
+  }
+
+  .expiry-days {
+    font-size: 15px;
+  }
+
+}

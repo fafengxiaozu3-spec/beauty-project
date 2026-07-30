@@ -27,9 +27,7 @@ function Palette() {
           title="我的色卡🎨"
           toggleMenu={toggleMenu}
         />
-
         <p>內容</p>
-
       </div>
     </div>
   );
