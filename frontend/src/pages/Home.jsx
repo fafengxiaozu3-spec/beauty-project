@@ -57,7 +57,9 @@ function Home() {
             expireDate.getTime() - today.getTime();
 
           const diffDays =
-            Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            Math.ceil(
+              diffTime / (1000 * 60 * 60 * 24)
+            );
 
           // 已經過期
           if (diffDays < 0) {
@@ -113,9 +115,7 @@ function Home() {
             <p>化妝品數量</p>
 
             {loading ? (
-              <div className="dashboard-loading">
-                <div className="dashboard-spinner"></div>
-              </div>
+              <div className="count-loading"></div>
             ) : (
               <h3>{productCount}</h3>
             )}
@@ -135,9 +135,7 @@ function Home() {
             <p>即將過期</p>
 
             {loading ? (
-              <div className="dashboard-loading">
-                <div className="dashboard-spinner"></div>
-              </div>
+              <div className="count-loading"></div>
             ) : (
               <h3>{expiringCount}</h3>
             )}
@@ -149,9 +147,7 @@ function Home() {
             <p>已過期</p>
 
             {loading ? (
-              <div className="dashboard-loading">
-                <div className="dashboard-spinner"></div>
-              </div>
+              <div className="count-loading"></div>
             ) : (
               <h3>{expiredCount}</h3>
             )}
