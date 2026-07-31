@@ -6,11 +6,11 @@ import { initLiff } from "../services/liff";
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [cosmeticsCount, setCosmeticsCount] = useState(0);
-  const [expiryCount, setExpiryCount] = useState(0);
+  const [productCount, setProductCount] = useState(0);
+  const [expiringCount, setExpiringCount] = useState(0);
+  const [expiredCount, setExpiredCount] = useState(0);
 
-  const [loadingCosmetics, setLoadingCosmetics] = useState(true);
-  const [loadingExpiry, setLoadingExpiry] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
@@ -18,54 +18,68 @@ function Home() {
 
   useEffect(() => {
     async function loadDashboard() {
-      const profile = await initLiff();
-
-      if (!profile) return;
-
-      const userId = profile.userId;
-
       try {
-        // 取得化妝品
-        const productsRes = await fetch(
+        const profile = await initLiff();
+
+        if (!profile) {
+          setLoading(false);
+          return;
+        }
+
+        const userId = profile.userId;
+
+        // 取得使用者的化妝品
+        const res = await fetch(
           `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
         );
 
-        const products = await productsRes.json();
+        const products = await res.json();
 
-        setCosmeticsCount(products.length);
-        setLoadingCosmetics(false);
+        // 化妝品總數
+        setProductCount(products.length);
 
-        // 計算即將過期
+        // 今天日期
         const today = new Date();
 
-        const sixMonthsLater = new Date();
-        sixMonthsLater.setMonth(
-          sixMonthsLater.getMonth() + 6
-        );
+        // 計算即將過期和已過期
+        let expiring = 0;
+        let expired = 0;
 
-        const expiryProducts = products.filter((product) => {
+        products.forEach((product) => {
           if (!product.expire_date) {
-            return false;
+            return;
           }
 
-          const expireDate = new Date(
-            product.expire_date
-          );
+          const expireDate = new Date(product.expire_date);
 
-          return (
-            expireDate >= today &&
-            expireDate <= sixMonthsLater
-          );
+          // 計算距離到期還有幾天
+          const diffTime =
+            expireDate.getTime() - today.getTime();
+
+          const diffDays =
+            Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          // 已經過期
+          if (diffDays < 0) {
+            expired++;
+          }
+
+          // 180 天內到期
+          else if (diffDays <= 180) {
+            expiring++;
+          }
         });
 
-        setExpiryCount(expiryProducts.length);
-        setLoadingExpiry(false);
+        setExpiringCount(expiring);
+        setExpiredCount(expired);
 
       } catch (error) {
-        console.log(error);
-
-        setLoadingCosmetics(false);
-        setLoadingExpiry(false);
+        console.error(
+          "取得 Dashboard 資料失敗:",
+          error
+        );
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -96,39 +110,51 @@ function Home() {
 
           {/* 化妝品數量 */}
           <div className="info-box">
-
             <p>化妝品數量</p>
 
-            {loadingCosmetics ? (
-              <div className="count-loading"></div>
+            {loading ? (
+              <div className="dashboard-loading">
+                <div className="dashboard-spinner"></div>
+              </div>
             ) : (
-              <h3>{cosmeticsCount}</h3>
+              <h3>{productCount}</h3>
             )}
-
           </div>
 
 
           {/* 保養品數量 */}
           <div className="info-box">
-
             <p>保養品數量</p>
 
-            <h3>8</h3>
-
+            <h3>0</h3>
           </div>
 
 
           {/* 即將過期 */}
           <div className="info-box">
-
             <p>即將過期</p>
 
-            {loadingExpiry ? (
-              <div className="count-loading"></div>
+            {loading ? (
+              <div className="dashboard-loading">
+                <div className="dashboard-spinner"></div>
+              </div>
             ) : (
-              <h3>{expiryCount}</h3>
+              <h3>{expiringCount}</h3>
             )}
+          </div>
 
+
+          {/* 已過期 */}
+          <div className="info-box">
+            <p>已過期</p>
+
+            {loading ? (
+              <div className="dashboard-loading">
+                <div className="dashboard-spinner"></div>
+              </div>
+            ) : (
+              <h3>{expiredCount}</h3>
+            )}
           </div>
 
         </div>
