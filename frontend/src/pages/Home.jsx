@@ -100,12 +100,12 @@ function Home() {
       <div className="main">
 
         <Header
-          title="Dashboard"
+          title="美妝管理中心"
           toggleMenu={toggleMenu}
         />
 
         <p className="subtitle">
-          你的美妝管理中心
+          產品數量統計
         </p>
 
         <div className="info-grid">
