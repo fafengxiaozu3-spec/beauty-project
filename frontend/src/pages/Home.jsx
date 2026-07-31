@@ -6,8 +6,11 @@ import { initLiff } from "../services/liff";
 function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [productCount, setProductCount] = useState(0);
+  const [cosmeticsCount, setCosmeticsCount] = useState(0);
   const [expiryCount, setExpiryCount] = useState(0);
+
+  const [loadingCosmetics, setLoadingCosmetics] = useState(true);
+  const [loadingExpiry, setLoadingExpiry] = useState(true);
 
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
@@ -22,65 +25,47 @@ function Home() {
       const userId = profile.userId;
 
       try {
-        const res = await fetch(
+        // 取得化妝品
+        const productsRes = await fetch(
           `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
         );
 
-        const products = await res.json();
+        const products = await productsRes.json();
 
-        // =========================
-        // 化妝品總數
-        // =========================
+        setCosmeticsCount(products.length);
+        setLoadingCosmetics(false);
 
-        setProductCount(products.length);
-
-
-        // =========================
-        // 計算 6 個月後的日期
-        // =========================
-
+        // 計算即將過期
         const today = new Date();
 
-        const sixMonthsLater = new Date(today);
+        const sixMonthsLater = new Date();
         sixMonthsLater.setMonth(
           sixMonthsLater.getMonth() + 6
         );
 
-
-        // =========================
-        // 計算即將過期數量
-        // 包含：
-        // 1. 已經過期
-        // 2. 6 個月內到期
-        // =========================
-
-        const expiryProducts = products.filter(
-          (product) => {
-
-            if (!product.expire_date) {
-              return false;
-            }
-
-            const expireDate =
-              new Date(product.expire_date);
-
-            return (
-              expireDate < today ||
-              expireDate <= sixMonthsLater
-            );
+        const expiryProducts = products.filter((product) => {
+          if (!product.expire_date) {
+            return false;
           }
-        );
 
+          const expireDate = new Date(
+            product.expire_date
+          );
 
-        setExpiryCount(
-          expiryProducts.length
-        );
+          return (
+            expireDate >= today &&
+            expireDate <= sixMonthsLater
+          );
+        });
 
-      } catch (err) {
-        console.log(
-          "取得 Dashboard 資料失敗:",
-          err
-        );
+        setExpiryCount(expiryProducts.length);
+        setLoadingExpiry(false);
+
+      } catch (error) {
+        console.log(error);
+
+        setLoadingCosmetics(false);
+        setLoadingExpiry(false);
       }
     }
 
@@ -110,46 +95,39 @@ function Home() {
         <div className="info-grid">
 
           {/* 化妝品數量 */}
-
           <div className="info-box">
 
-            <p>
-              化妝品數量
-            </p>
+            <p>化妝品數量</p>
 
-            <h3>
-              {productCount}
-            </h3>
+            {loadingCosmetics ? (
+              <div className="count-loading"></div>
+            ) : (
+              <h3>{cosmeticsCount}</h3>
+            )}
 
           </div>
 
 
           {/* 保養品數量 */}
-
           <div className="info-box">
 
-            <p>
-              保養品數量
-            </p>
+            <p>保養品數量</p>
 
-            <h3>
-              8
-            </h3>
+            <h3>8</h3>
 
           </div>
 
 
           {/* 即將過期 */}
-
           <div className="info-box">
 
-            <p>
-              即將過期
-            </p>
+            <p>即將過期</p>
 
-            <h3>
-              {expiryCount}
-            </h3>
+            {loadingExpiry ? (
+              <div className="count-loading"></div>
+            ) : (
+              <h3>{expiryCount}</h3>
+            )}
 
           </div>
 

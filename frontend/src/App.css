@@ -610,3 +610,37 @@ body {
   }
 
 }
+
+/* =========================
+   Dashboard 數字 Loading
+========================= */
+
+.count-loading {
+  width: 35px;
+  height: 25px;
+
+  border-radius: 6px;
+
+  background: linear-gradient(
+    90deg,
+    #f5dfe5 25%,
+    #ffeef2 50%,
+    #f5dfe5 75%
+  );
+
+  background-size: 200% 100%;
+
+  animation: countLoading 1.2s infinite;
+}
+
+@keyframes countLoading {
+
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+
+}
