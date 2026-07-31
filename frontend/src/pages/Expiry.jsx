@@ -119,7 +119,7 @@ function Expiry() {
             <div className="loading-circle"></div>
 
             <p>
-              正在檢查即將過期的化妝品...
+              正在檢查即將過期的產品...
             </p>
           </div>
 
@@ -127,7 +127,7 @@ function Expiry() {
 
           <div className="expiry-empty">
             <p>
-              🎉 目前沒有即將過期的化妝品
+              🎉 目前沒有即將過期的產品
             </p>
           </div>
 
