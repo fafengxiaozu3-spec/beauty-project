@@ -179,7 +179,7 @@ body {
   border:none;
   border-radius:50%;
 
-  background:#ffccd5;
+  background:#ffd1df;
 
   color:#ff8fab;
 
@@ -190,15 +190,6 @@ body {
   cursor:pointer;
 
   transition:.2s;
-}
-
-
-.search-btn:hover{
-  background:#ffd1df;
-}
-
-.search-btn:active{
-  transform:scale(.92);
 }
 
 .search-bar{
