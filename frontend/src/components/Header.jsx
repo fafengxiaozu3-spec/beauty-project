@@ -41,9 +41,9 @@ function Header({
         ☰
       </button>
 
-      <h1 style={{ opacity: showSearchButton && showSearch ? 0 : 1 }}>
-        {title}
-      </h1>
+      {!(showSearchButton && showSearch) && (
+        <h1>{title}</h1>
+      )}
 
       <div className="header-right">
         {showSearchButton && children}
