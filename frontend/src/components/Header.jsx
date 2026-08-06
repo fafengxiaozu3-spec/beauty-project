@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 function Header({
   title,
   toggleMenu,
+  enableSearch = false,
   showSearch,
   setShowSearch,
   searchText,
@@ -44,10 +45,13 @@ function Header({
         ☰
       </button>
 
-      {!showSearch ? (
+      {enableSearch && !showSearch ? (
 
         <>
-          <h1>{title}</h1>
+          {!showSearch && <h1>{title}</h1>}
+          {!enableSearch && (
+            <h1>{title}</h1>
+          )}
 
           <button
             className="search-btn"

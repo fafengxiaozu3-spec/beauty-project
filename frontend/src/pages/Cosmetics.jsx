@@ -243,6 +243,7 @@ function Cosmetics() {
         <Header
           title="我的化妝品💄"
           toggleMenu={toggleMenu}
+          enableSearch={true}
           showSearch={showSearch}
           setShowSearch={setShowSearch}
           searchText={searchText}
