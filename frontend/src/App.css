@@ -176,23 +176,26 @@ body {
   border-radius:50%;
 
   background:#ffe3ec;
-  color:#ff5b8a;
 
-  font-size:20px;
+  color:#ff6f91;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
 
   cursor:pointer;
 
   transition:.2s;
 }
 
+
 .search-btn:hover{
   background:#ffd1df;
 }
 
 .search-btn:active{
-  transform:scale(.95);
+  transform:scale(.92);
 }
-
 
 .search-bar{
   display:flex;
@@ -202,7 +205,7 @@ body {
 }
 
 .search-bar input{
-    width:230px;
+    width:210px;
 
     padding:8px 14px;
 
