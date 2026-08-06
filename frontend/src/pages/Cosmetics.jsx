@@ -199,6 +199,21 @@ function Cosmetics() {
     }
   }
 
+  const filteredProducts = products.filter((item) => {
+
+    const keyword = searchText.trim().toLowerCase();
+
+    if (keyword === "") return true;
+
+    return (
+      item.product_name?.toLowerCase().includes(keyword) ||
+      item.brand?.toLowerCase().includes(keyword) ||
+      item.category?.toLowerCase().includes(keyword) ||
+      item.shade?.toLowerCase().includes(keyword)
+    );
+
+  });
+
   return (
     <div className="layout">
 
