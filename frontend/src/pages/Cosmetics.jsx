@@ -14,7 +14,7 @@ function Cosmetics() {
   
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
-
+  
   const [menuPosition, setMenuPosition] = useState({
     top:0,
     left:0
@@ -200,18 +200,14 @@ function Cosmetics() {
   }
 
   const filteredProducts = products.filter((item) => {
-
-    const keyword = searchText.trim().toLowerCase();
-
-    if (keyword === "") return true;
+    const keyword = searchText.toLowerCase();
 
     return (
-      item.product_name?.toLowerCase().includes(keyword) ||
-      item.brand?.toLowerCase().includes(keyword) ||
-      item.category?.toLowerCase().includes(keyword) ||
-      item.shade?.toLowerCase().includes(keyword)
+      item.product_name.toLowerCase().includes(keyword) ||
+      item.brand.toLowerCase().includes(keyword) ||
+      item.category.toLowerCase().includes(keyword) ||
+      (item.shade || "").toLowerCase().includes(keyword)
     );
-
   });
 
   return (
@@ -243,10 +239,8 @@ function Cosmetics() {
         <Header
           title="我的化妝品💄"
           toggleMenu={toggleMenu}
-          />
-
-        <div className="search-header">
-
+          showSearchButton={true}
+        >
           {!showSearch ? (
 
             <button
@@ -264,7 +258,7 @@ function Cosmetics() {
                 autoFocus
                 placeholder="搜尋品牌、分類、產品..."
                 value={searchText}
-                onChange={(e)=>setSearchText(e.target.value)}
+                onChange={(e) => setSearchText(e.target.value)}
               />
 
               <button
@@ -279,8 +273,7 @@ function Cosmetics() {
             </div>
 
           )}
-
-        </div>
+        </Header>
 
         {loadingProducts ? (
 

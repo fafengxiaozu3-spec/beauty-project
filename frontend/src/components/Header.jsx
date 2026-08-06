@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 
-function Header({ title, toggleMenu }) {
+function Header({
+  title,
+  toggleMenu,
+  showSearchButton = false,
+  children
+}) {
   const [showHeader, setShowHeader] = useState(true);
 
   useEffect(() => {
@@ -37,6 +42,11 @@ function Header({ title, toggleMenu }) {
       </button>
 
       <h1>{title}</h1>
+
+      <div className="header-right">
+        {showSearchButton && children}
+      </div>
+      
     </div>
   );
 }
