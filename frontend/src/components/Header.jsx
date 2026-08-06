@@ -33,7 +33,10 @@ function Header({
   }, []);
 
   return (
-    <div className={`page-header ${showHeader ? "" : "hide"}`}>
+    <div 
+      className={`page-header ${showHeader ? "" : "hide"}`}
+      onClick={(e)=>e.stopPropagation()}
+    >
       <button
         className="menu-btn"
         onClick={toggleMenu}

@@ -235,12 +235,22 @@ function Cosmetics() {
         />
       )}
 
-        <div className="main">
-        <Header
-          title="我的化妝品💄"
-          toggleMenu={toggleMenu}
-          showSearchButton={true}
+        <div 
+          className="main"
+          onClick={()=>{
+            if(showSearch){
+              setSearchText("");
+              setShowSearch(false);
+            }
+          }}
         >
+
+          <Header
+            title="我的化妝品💄"
+            toggleMenu={toggleMenu}
+            showSearchButton={true}
+          >
+
           {!showSearch ? (
 
             <button
@@ -275,7 +285,9 @@ function Cosmetics() {
 
               <button
                 className="search-close"
-                onClick={()=>{
+                onClick={(e)=>{
+                  e.stopPropagation();
+
                   setSearchText("");
                   setShowSearch(false);
                 }}
