@@ -27,7 +27,6 @@ function Shopping() {
         <Header
           title="購物清單🛒"
           toggleMenu={toggleMenu}
-          enableSearch={true}
         />
         <p>內容</p>
       </div>

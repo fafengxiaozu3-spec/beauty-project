@@ -11,7 +11,7 @@ function Cosmetics() {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
+  
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
 
@@ -199,21 +199,6 @@ function Cosmetics() {
     }
   }
 
-  const filteredProducts = products.filter((item) => {
-
-    const keyword = searchText.trim().toLowerCase();
-
-    if (keyword === "") return true;
-
-    return (
-      item.product_name?.toLowerCase().includes(keyword) ||
-      item.brand?.toLowerCase().includes(keyword) ||
-      item.category?.toLowerCase().includes(keyword) ||
-      item.shade?.toLowerCase().includes(keyword)
-    );
-
-  });
-
   return (
     <div className="layout">
 
@@ -243,12 +228,44 @@ function Cosmetics() {
         <Header
           title="我的化妝品💄"
           toggleMenu={toggleMenu}
-          enableSearch={true}
-          showSearch={showSearch}
-          setShowSearch={setShowSearch}
-          searchText={searchText}
-          setSearchText={setSearchText}
-        />
+          />
+
+        <div className="search-header">
+
+          {!showSearch ? (
+
+            <button
+              className="search-btn"
+              onClick={() => setShowSearch(true)}
+            >
+              🔍
+            </button>
+
+          ) : (
+
+            <div className="search-bar">
+
+              <input
+                autoFocus
+                placeholder="搜尋品牌、分類、產品..."
+                value={searchText}
+                onChange={(e)=>setSearchText(e.target.value)}
+              />
+
+              <button
+                onClick={()=>{
+                  setSearchText("");
+                  setShowSearch(false);
+                }}
+              >
+                ✕
+              </button>
+
+            </div>
+
+          )}
+
+        </div>
 
         {loadingProducts ? (
 

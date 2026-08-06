@@ -27,7 +27,6 @@ function Skincare() {
          <Header
           title="我的保養品"
           toggleMenu={toggleMenu}
-          enableSearch={true}
         />
         <p>內容</p>
       </div>

@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
 
-function Header({
-  title,
-  toggleMenu,
-  enableSearch = false,
-  showSearch,
-  setShowSearch,
-  searchText,
-  setSearchText
-}) {
+function Header({ title, toggleMenu }) {
   const [showHeader, setShowHeader] = useState(true);
 
   useEffect(() => {
@@ -37,7 +29,6 @@ function Header({
 
   return (
     <div className={`page-header ${showHeader ? "" : "hide"}`}>
-
       <button
         className="menu-btn"
         onClick={toggleMenu}
@@ -45,48 +36,7 @@ function Header({
         ☰
       </button>
 
-      {enableSearch && !showSearch ? (
-
-        <>
-          {!showSearch && <h1>{title}</h1>}
-          {!enableSearch && (
-            <h1>{title}</h1>
-          )}
-
-          <button
-            className="search-btn"
-            onClick={() => setShowSearch(true)}
-          >
-            🔍
-          </button>
-        </>
-
-      ) : (
-
-        <div className="search-bar">
-
-          <input
-            autoFocus
-            type="text"
-            placeholder="搜尋品牌、分類、產品..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-
-          <button
-            className="close-search"
-            onClick={() => {
-              setSearchText("");
-              setShowSearch(false);
-            }}
-          >
-            ✕
-          </button>
-
-        </div>
-
-      )}
-
+      <h1>{title}</h1>
     </div>
   );
 }
