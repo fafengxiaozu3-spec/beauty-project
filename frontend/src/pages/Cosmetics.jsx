@@ -274,6 +274,7 @@ function Cosmetics() {
               />
 
               <button
+                className="search-close"
                 onClick={()=>{
                   setSearchText("");
                   setShowSearch(false);
