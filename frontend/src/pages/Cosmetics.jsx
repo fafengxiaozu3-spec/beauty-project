@@ -11,6 +11,10 @@ function Cosmetics() {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editMode, setEditMode] = useState(false);
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
   const [menuPosition, setMenuPosition] = useState({
     top:0,
     left:0
@@ -195,6 +199,21 @@ function Cosmetics() {
     }
   }
 
+  const filteredProducts = products.filter((item) => {
+
+    const keyword = searchText.trim().toLowerCase();
+
+    if (keyword === "") return true;
+
+    return (
+      item.product_name?.toLowerCase().includes(keyword) ||
+      item.brand?.toLowerCase().includes(keyword) ||
+      item.category?.toLowerCase().includes(keyword) ||
+      item.shade?.toLowerCase().includes(keyword)
+    );
+
+  });
+
   return (
     <div className="layout">
 
@@ -224,7 +243,11 @@ function Cosmetics() {
         <Header
           title="我的化妝品💄"
           toggleMenu={toggleMenu}
-          />
+          showSearch={showSearch}
+          setShowSearch={setShowSearch}
+          searchText={searchText}
+          setSearchText={setSearchText}
+        />
 
         {loadingProducts ? (
 
@@ -239,7 +262,7 @@ function Cosmetics() {
         ) : (
 
           <div className="info-grid">
-            {products.map(item => (
+            {filteredProducts.map(item => (
               <div
                 key={item.id}
                 className="info-box"
