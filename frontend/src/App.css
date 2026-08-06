@@ -168,6 +168,10 @@ body {
   align-items:center;
 }
 
+/* =========================
+  搜尋按鈕
+========================= */
+
 .search-btn{
   width:42px;
   height:42px;
@@ -175,9 +179,9 @@ body {
   border:none;
   border-radius:50%;
 
-  background:#ffe3ec;
+  background:white;
 
-  color:#ff6f91;
+  color:#ff8fab;
 
   display:flex;
   justify-content:center;
@@ -185,7 +189,8 @@ body {
 
   cursor:pointer;
 
-  transition:.2s;
+  box-shadow:
+  0 6px 18px rgba(0,0,0,.12);
 }
 
 
