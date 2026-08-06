@@ -41,14 +41,12 @@ function Header({
         ☰
       </button>
 
-      {!(showSearchButton && showSearch) && (
-        <h1>{title}</h1>
-      )}
+      <h1>{title}</h1>
 
       <div className="header-right">
         {showSearchButton && children}
       </div>
-
+      
     </div>
   );
 }
