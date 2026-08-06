@@ -179,7 +179,7 @@ body {
   border:none;
   border-radius:50%;
 
-  background:white;
+  background:#ffccd5;
 
   color:#ff8fab;
 
@@ -189,8 +189,7 @@ body {
 
   cursor:pointer;
 
-  box-shadow:
-  0 6px 18px rgba(0,0,0,.12);
+  transition:.2s;
 }
 
 
