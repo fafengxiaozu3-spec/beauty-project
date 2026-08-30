@@ -724,3 +724,107 @@ body {
   }
 
 }
+
+/* =========================
+   Shopping 購物清單
+========================= */
+
+.shopping-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  width: 100%;
+}
+
+/* 每一筆購物清單 */
+
+.shopping-item {
+  position: relative;
+
+  width: 100%;
+  min-height: 65px;
+
+  padding: 18px 50px 18px 20px;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+/* 品牌 + 商品名稱 */
+
+.shopping-info {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+/* 品牌 */
+
+.shopping-brand {
+  font-size: 15px;
+
+  font-weight: 600;
+
+  color: #444;
+
+  white-space: nowrap;
+}
+
+/* 商品名稱 */
+
+.shopping-name {
+  font-size: 15px;
+
+  color: #666;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+/* 沒有購物清單 */
+
+.shopping-empty {
+  width: 100%;
+
+  padding: 50px 20px;
+
+  text-align: center;
+
+  color: #999;
+}
+
+
+/* =========================
+   手機版購物清單
+========================= */
+
+@media (max-width: 768px) {
+
+  .shopping-item {
+    min-height: 60px;
+
+    padding: 16px 45px 16px 16px;
+  }
+
+  .shopping-brand {
+    font-size: 14px;
+  }
+
+  .shopping-name {
+    font-size: 14px;
+  }
+
+}
