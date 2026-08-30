@@ -67,7 +67,7 @@ function Cosmetics() {
 
     try {
       const res = await fetch(
-        `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}&product_type=cosmetics`
+        `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
       );
 
       const data = await res.json();
