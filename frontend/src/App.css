@@ -1145,8 +1145,9 @@ body {
 }
 
   .popup input[type="date"] {
-    width: 250px;
+    width: 260px;
     box-sizing: border-box;
+    position: relative;
   }
 
 /* =========================
