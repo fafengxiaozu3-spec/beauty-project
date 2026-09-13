@@ -752,7 +752,6 @@ function Cosmetics() {
                       onChange={handleChange}
                     />
 
-                    <span className="date-icon">📅</span>
                   </div>
 
                   <input
@@ -783,7 +782,6 @@ function Cosmetics() {
                     onChange={handleChange}
                   />
 
-                  <span className="date-icon">📅</span>
                 </div>
 
               )}
