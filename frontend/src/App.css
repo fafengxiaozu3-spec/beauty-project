@@ -1144,10 +1144,57 @@ body {
 
 }
 
-  .popup input[type="date"] {
-    width: 255px;
-    box-sizing: border-box;
+  .date-input-wrapper {
     position: relative;
+    width: 255px;
+    height: 44px;
+  }
+
+  .date-input-wrapper .date-placeholder {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 15px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .date-input-wrapper .date-placeholder.has-value {
+    color: #333;
+  }
+
+  .date-input-wrapper input[type="date"] {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0 42px 0 14px;
+    font-size: 15px;
+    color: transparent;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .date-input-wrapper input[type="date"]:focus {
+    outline: none;
+    border-color: #e5a6b6;
+  }
+
+  .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .date-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    pointer-events: none;
   }
 
 /* =========================
