@@ -741,6 +741,7 @@ function Cosmetics() {
                     name="manufacture_date"
                     value={form.manufacture_date}
                     onChange={handleChange}
+                    data-placeholder="請輸入日期"
                   />
 
                   <input
@@ -760,6 +761,7 @@ function Cosmetics() {
                   name="expire_date"
                   value={form.expire_date}
                   onChange={handleChange}
+                  data-placeholder="請輸入日期"
                 />
 
               )}
