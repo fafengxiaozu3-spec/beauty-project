@@ -985,7 +985,7 @@ body {
   .date-input-wrapper {
     position: relative;
     width: 100%;
-    height: 46px;
+    height: 40px;
     flex-shrink: 0;
   }
 
@@ -1007,8 +1007,6 @@ body {
   .date-input-wrapper input[type="date"] {
     width: 100%;
     height: 46px;
-    min-height: 46px;
-    max-height: 46px;
 
     box-sizing: border-box;
 
