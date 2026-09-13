@@ -73,7 +73,7 @@ function Cosmetics() {
   }, []);
 
   useEffect(() => {
-    if (showForm) {
+    if (showForm || showDetail) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -82,7 +82,7 @@ function Cosmetics() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [showForm]);
+  }, [showForm, showDetail]);
 
   async function loadProducts(userId) {
     setLoadingProducts(true);
