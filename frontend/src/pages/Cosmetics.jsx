@@ -736,13 +736,24 @@ function Cosmetics() {
 
                 <>
 
-                  <input
-                    type="date"
-                    name="manufacture_date"
-                    value={form.manufacture_date}
-                    onChange={handleChange}
-                    data-placeholder="請輸入日期"
-                  />
+                  <div className="date-input-wrapper">
+                    <span
+                      className={`date-placeholder ${
+                        form.manufacture_date ? "has-value" : ""
+                      }`}
+                    >
+                      {form.manufacture_date || "請輸入日期"}
+                    </span>
+
+                    <input
+                      type="date"
+                      name="manufacture_date"
+                      value={form.manufacture_date}
+                      onChange={handleChange}
+                    />
+
+                    <span className="date-icon">📅</span>
+                  </div>
 
                   <input
                     type="number"
@@ -756,13 +767,24 @@ function Cosmetics() {
 
               ) : (
 
-                <input
-                  type="date"
-                  name="expire_date"
-                  value={form.expire_date}
-                  onChange={handleChange}
-                  data-placeholder="請輸入日期"
-                />
+                <div className="date-input-wrapper">
+                  <span
+                    className={`date-placeholder ${
+                      form.expire_date ? "has-value" : ""
+                    }`}
+                  >
+                    {form.expire_date || "請輸入日期"}
+                  </span>
+
+                  <input
+                    type="date"
+                    name="expire_date"
+                    value={form.expire_date}
+                    onChange={handleChange}
+                  />
+
+                  <span className="date-icon">📅</span>
+                </div>
 
               )}
 
