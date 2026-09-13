@@ -986,7 +986,9 @@ body {
     position: relative;
     width: 100%;
     height: 46px;
+    align-self: stretch;
     flex-shrink: 0;
+    box-sizing: border-box;
   }
 
   .date-input-wrapper .date-placeholder {
@@ -1005,11 +1007,10 @@ body {
   }
 
   .date-input-wrapper input[type="date"] {
+    display: block;
     width: 100%;
-    height: 46px !important;
-    min-height: 46px !important;
-    max-height: 46px !important;
-
+    height: 46px;
+    min-width: 0;
     box-sizing: border-box;
 
     border: 1px solid #eadde1;
@@ -1018,16 +1019,10 @@ body {
     padding: 0 14px;
     font-size: 14px;
     font-family: inherit;
-
     outline: none;
     background: #fff;
-
     color: transparent;
     cursor: pointer;
-
-    /* ⭐ 關鍵：取消手機原生日期輸入框外觀 */
-    -webkit-appearance: none;
-    appearance: none;
   }
 
   .date-input-wrapper input[type="date"]:focus {
