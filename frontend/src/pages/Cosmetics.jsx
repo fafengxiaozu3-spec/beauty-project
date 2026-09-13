@@ -72,6 +72,18 @@ function Cosmetics() {
     start();
   }, []);
 
+  useEffect(() => {
+    if (showForm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showForm]);
+
   async function loadProducts(userId) {
     setLoadingProducts(true);
 

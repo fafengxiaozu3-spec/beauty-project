@@ -1144,6 +1144,11 @@ body {
 
 }
 
+  .popup input[type="date"] {
+    width: 180px;
+    box-sizing: border-box;
+  }
+
 /* =========================
   取得化妝品 loading
 ========================= */
