@@ -984,8 +984,8 @@ body {
 
   .date-input-wrapper {
     position: relative;
-    width: 200px;
-    height: 46px;
+    width: 255px;
+    height: 40px;
   }
 
   .date-input-wrapper .date-placeholder {
