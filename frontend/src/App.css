@@ -1024,6 +1024,10 @@ body {
 
     color: transparent;
     cursor: pointer;
+
+    /* ⭐ 關鍵：取消手機原生日期輸入框外觀 */
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .date-input-wrapper input[type="date"]:focus {
