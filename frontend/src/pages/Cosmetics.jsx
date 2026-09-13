@@ -751,8 +751,6 @@ function Cosmetics() {
                       value={form.manufacture_date}
                       onChange={handleChange}
                     />
-
-                    <span className="date-icon">📅</span>
                   </div>
 
                   <input
@@ -782,8 +780,6 @@ function Cosmetics() {
                     value={form.expire_date}
                     onChange={handleChange}
                   />
-
-                  <span className="date-icon">📅</span>
                 </div>
 
               )}
