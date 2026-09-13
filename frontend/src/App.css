@@ -984,8 +984,8 @@ body {
 
   .date-input-wrapper {
     position: relative;
-    width: 180px;
-    height: 40px;
+    width: 100%;
+    height: 46px;
     flex-shrink: 0;
   }
 
@@ -1006,24 +1006,34 @@ body {
 
   .date-input-wrapper input[type="date"] {
     width: 100%;
-    height: 40px !important;
-    min-height: 0 !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+
     box-sizing: border-box;
+
+    border: 1px solid #eadde1;
+    border-radius: 12px;
+
     padding: 0 14px;
     font-size: 14px;
+    font-family: inherit;
+
+    outline: none;
+    background: #fff;
+
     color: transparent;
     cursor: pointer;
+
+    /* ⭐ 關鍵：取消手機原生日期輸入框外觀 */
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .date-input-wrapper input[type="date"]:focus {
     outline: none;
     border-color: #efb0bf;
     box-shadow: 0 0 0 3px rgba(255, 143, 171, .10);
-  }
-
-  .date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    cursor: pointer;
   }
 
 /* =========================
