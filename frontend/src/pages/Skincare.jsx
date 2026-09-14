@@ -413,53 +413,47 @@ function Skincare() {
 
           <div className="cosmetics-list">
 
-            {filteredProducts.map((item) => (
+            {filteredProducts.length === 0 ? (
 
-              <div
-                key={item.id}
-                className="cosmetic-card"
-
-                onClick={() => {
-                  setSelectedProduct(item);
-                  setShowDetail(true);
-                }}
-              >
-
-                {/* 商品照片 */}
-
-                <div className="cosmetic-photo">
-                  <span>📷</span>
-                </div>
-
-
-                {/* 商品資訊 */}
-
-                <div className="cosmetic-info">
-
-                  <p className="cosmetic-brand">
-                    {item.brand}
-                  </p>
-
-                  <h3 className="cosmetic-name">
-                    {item.product_name}
-                  </h3>
-
-                  <p className="cosmetic-category">
-                    {item.category || "-"}
-                  </p>
-
-                </div>
-
-
-                {/* 箭頭 */}
-
-                <div className="cosmetic-arrow">
-                  ›
-                </div>
-
+              <div className="shopping-empty">
+                {searchText
+                  ? "找不到符合的保養品❌"
+                  : "目前還沒有保養品😭"}
               </div>
 
-            ))}
+            ) : (
+
+              filteredProducts.map((item) => (
+                <div
+                  key={item.id}
+                  className="cosmetic-card"
+                  onClick={() => openDetail(item)}
+                >
+                  <div className="cosmetic-photo">
+                    🧴
+                  </div>
+
+                  <div className="cosmetic-info">
+                    <p className="cosmetic-brand">
+                      {item.brand || "未填品牌"}
+                    </p>
+
+                    <p className="cosmetic-name">
+                      {item.product_name}
+                    </p>
+
+                    <p className="cosmetic-category">
+                      {item.category || "未分類"}
+                    </p>
+                  </div>
+
+                  <div className="cosmetic-arrow">
+                    ›
+                  </div>
+                </div>
+              ))
+
+            )}
 
           </div>
 

@@ -415,50 +415,59 @@ function Cosmetics() {
 
           <div className="cosmetics-list">
 
-            {filteredProducts.map((item) => (
+            {filteredProducts.length === 0 ? (
 
-              <div
-                key={item.id}
-                className="cosmetic-card"
-
-                onClick={() => {
-                  setSelectedProduct(item);
-                  setShowDetail(true);
-                }}
-              >
-
-                <div className="cosmetic-photo">
-                  <span>📷</span>
-                </div>
-
-
-                <div className="cosmetic-info">
-
-                  <p className="cosmetic-brand">
-                    {item.brand}
-                  </p>
-
-                  <h3 className="cosmetic-name">
-                    {item.product_name}
-                  </h3>
-
-                  <p className="cosmetic-category">
-                    {item.category}
-                    {item.shade
-                      ? ` ・ ${item.shade}`
-                      : ""}
-                  </p>
-
-                </div>
-
-
-                <div className="cosmetic-arrow">
-                  ›
-                </div>
-
+              <div className="shopping-empty">
+                {searchText
+                  ? "找不到符合的化妝品❌"
+                  : "目前還沒有化妝品😢"}
               </div>
 
-            ))}
+            ) : (
+
+              filteredProducts.map((item) => (
+
+                <div
+                  key={item.id}
+                  className="cosmetic-card"
+                  onClick={() => {
+                    setSelectedProduct(item);
+                    setShowDetail(true);
+                  }}
+                >
+
+                  <div className="cosmetic-photo">
+                    <span>📷</span>
+                  </div>
+
+                  <div className="cosmetic-info">
+
+                    <p className="cosmetic-brand">
+                      {item.brand}
+                    </p>
+
+                    <h3 className="cosmetic-name">
+                      {item.product_name}
+                    </h3>
+
+                    <p className="cosmetic-category">
+                      {item.category}
+                      {item.shade
+                        ? ` ・ ${item.shade}`
+                        : ""}
+                    </p>
+
+                  </div>
+
+                  <div className="cosmetic-arrow">
+                    ›
+                  </div>
+
+                </div>
+
+              ))
+
+            )}
 
           </div>
 
