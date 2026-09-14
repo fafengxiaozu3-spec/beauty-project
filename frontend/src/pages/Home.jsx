@@ -7,6 +7,7 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [productCount, setProductCount] = useState(0);
+  const [skincareCount, setSkincareCount] = useState(0);
   const [expiringCount, setExpiringCount] = useState(0);
   const [expiredCount, setExpiredCount] = useState(0);
 
@@ -28,24 +29,39 @@ function Home() {
 
         const userId = profile.userId;
 
+        // =========================
         // 取得使用者的化妝品
-        const res = await fetch(
-          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}`
+        // =========================
+        const cosmeticsRes = await fetch(
+          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}&product_type=cosmetics`
         );
 
-        const products = await res.json();
+        const cosmetics = await cosmeticsRes.json();
 
         // 化妝品總數
-        setProductCount(products.length);
+        setProductCount(cosmetics.length);
 
-        // 今天日期
+        // =========================
+        // 取得使用者的保養品
+        // =========================
+        const skincareRes = await fetch(
+          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}&product_type=skincare`
+        );
+
+        const skincare = await skincareRes.json();
+
+        // 保養品總數
+        setSkincareCount(skincare.length);
+
+        // =========================
+        // 計算化妝品的到期狀態
+        // =========================
         const today = new Date();
 
-        // 計算即將過期和已過期
         let expiring = 0;
         let expired = 0;
 
-        products.forEach((product) => {
+        cosmetics.forEach((product) => {
           if (!product.expire_date) {
             return;
           }
@@ -56,10 +72,9 @@ function Home() {
           const diffTime =
             expireDate.getTime() - today.getTime();
 
-          const diffDays =
-            Math.ceil(
-              diffTime / (1000 * 60 * 60 * 24)
-            );
+          const diffDays = Math.ceil(
+            diffTime / (1000 * 60 * 60 * 24)
+          );
 
           // 已經過期
           if (diffDays < 0) {
@@ -126,7 +141,11 @@ function Home() {
           <div className="info-box">
             <p>保養品數量</p>
 
-            <h3>0</h3>
+            {loading ? (
+              <div className="count-loading"></div>
+            ) : (
+              <h3>{skincareCount}</h3>
+            )}
           </div>
 
 
