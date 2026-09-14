@@ -61,14 +61,18 @@ function Home() {
         let expiring = 0;
         let expired = 0;
 
-        cosmetics.forEach((product) => {
+        const allProducts = [
+          ...cosmetics,
+          ...skincare
+        ];
+
+        allProducts.forEach((product) => {
           if (!product.expire_date) {
             return;
           }
 
           const expireDate = new Date(product.expire_date);
 
-          // 計算距離到期還有幾天
           const diffTime =
             expireDate.getTime() - today.getTime();
 
