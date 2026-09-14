@@ -427,7 +427,10 @@ function Skincare() {
                 <div
                   key={item.id}
                   className="cosmetic-card"
-                  onClick={() => openDetail(item)}
+                  onClick={() => {
+                    setSelectedProduct(item);
+                    setShowDetail(true);
+                  }}
                 >
                   <div className="cosmetic-photo">
                     🧴
