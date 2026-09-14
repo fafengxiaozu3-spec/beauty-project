@@ -133,6 +133,8 @@ function Cosmetics() {
           body: JSON.stringify({
             user_id: userId,
 
+            product_type: "cosmetics",
+
             product_name: form.product_name,
             brand: form.brand,
             category: form.category,

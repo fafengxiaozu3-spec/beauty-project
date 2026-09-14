@@ -4,25 +4,23 @@ import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
 function Skincare() {
-
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
 
+  // 詳細資料
+  const [showDetail, setShowDetail] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // 編輯模式
   const [editMode, setEditMode] = useState(false);
 
+  // 搜尋
   const [showSearch, setShowSearch] = useState(false);
   const [searchText, setSearchText] = useState("");
-
-  const [menuPosition, setMenuPosition] = useState({
-    top: 0,
-    left: 0
-  });
 
   const [form, setForm] = useState({
     product_name: "",
@@ -35,14 +33,15 @@ function Skincare() {
 
   const [dateMode, setDateMode] = useState("manufacture");
 
-
   function toggleMenu() {
-    setMenuOpen(prev => !prev);
+    setMenuOpen((prev) => !prev);
   }
 
+  // =========================
+  // 重設表單
+  // =========================
 
   function resetForm() {
-
     setEditMode(false);
 
     setForm({
@@ -57,15 +56,12 @@ function Skincare() {
     setDateMode("manufacture");
   }
 
-
   // =========================
   // 取得保養品
   // =========================
 
   useEffect(() => {
-
     async function start() {
-
       const profile = await initLiff();
 
       if (!profile) return;
@@ -74,16 +70,32 @@ function Skincare() {
     }
 
     start();
-
   }, []);
 
+  // =========================
+  // 控制背景不能滑動
+  // =========================
+
+  useEffect(() => {
+    if (showForm || showDetail) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showForm, showDetail]);
+
+  // =========================
+  // 取得產品
+  // =========================
 
   async function loadProducts(userId) {
-
     setLoadingProducts(true);
 
     try {
-
       const res = await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products?user_id=${userId}&product_type=skincare`
       );
@@ -91,39 +103,30 @@ function Skincare() {
       const data = await res.json();
 
       setProducts(data);
-
     } catch (err) {
-
       console.log(err);
-
     } finally {
-
       setLoadingProducts(false);
     }
   }
 
-
   // =========================
-  // 表單
+  // 表單輸入
   // =========================
 
   function handleChange(e) {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
   }
 
-
   // =========================
   // 新增保養品
   // =========================
 
   async function createProduct() {
-
     try {
-
       const userId = localStorage.getItem("lineUserId");
 
       await fetch(
@@ -136,7 +139,6 @@ function Skincare() {
           },
 
           body: JSON.stringify({
-
             user_id: userId,
 
             product_type: "skincare",
@@ -161,7 +163,6 @@ function Skincare() {
               dateMode === "direct"
                 ? form.expire_date
                 : null
-
           })
         }
       );
@@ -171,20 +172,17 @@ function Skincare() {
       resetForm();
 
       loadProducts(userId);
-
     } catch (err) {
-
       console.log(err);
-
     }
   }
 
-
   // =========================
-  // 刪除
+  // 刪除產品
   // =========================
 
   async function deleteProduct() {
+    if (!selectedProduct) return;
 
     const confirmDelete = window.confirm(
       `確定要刪除 ${selectedProduct.brand} ${selectedProduct.product_name} 嗎？`
@@ -193,7 +191,6 @@ function Skincare() {
     if (!confirmDelete) return;
 
     try {
-
       await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
         {
@@ -201,28 +198,25 @@ function Skincare() {
         }
       );
 
-      loadProducts(
-        localStorage.getItem("lineUserId")
-      );
+      const userId = localStorage.getItem("lineUserId");
 
-      setShowMenu(false);
+      await loadProducts(userId);
 
+      setShowDetail(false);
+      setSelectedProduct(null);
     } catch (err) {
-
       console.log(err);
-
     }
   }
 
-
   // =========================
-  // 編輯
+  // 更新產品
   // =========================
 
   async function updateProduct() {
+    if (!selectedProduct) return;
 
     try {
-
       await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
         {
@@ -233,7 +227,6 @@ function Skincare() {
           },
 
           body: JSON.stringify({
-
             product_type: "skincare",
 
             product_name: form.product_name,
@@ -256,53 +249,53 @@ function Skincare() {
               dateMode === "direct"
                 ? form.expire_date
                 : null
-
           })
         }
       );
 
-      loadProducts(
-        localStorage.getItem("lineUserId")
-      );
+      const userId = localStorage.getItem("lineUserId");
+
+      await loadProducts(userId);
 
       setEditMode(false);
       setShowForm(false);
-
+      setShowDetail(false);
+      setSelectedProduct(null);
     } catch (err) {
-
       console.log(err);
-
     }
   }
-
 
   // =========================
   // 搜尋
   // =========================
 
-  const filteredProducts = products.filter(item => {
-
+  const filteredProducts = products.filter((item) => {
     const keyword = searchText.toLowerCase();
 
     return (
-      item.product_name?.toLowerCase().includes(keyword) ||
-      item.brand?.toLowerCase().includes(keyword) ||
-      item.category?.toLowerCase().includes(keyword)
+      (item.product_name || "")
+        .toLowerCase()
+        .includes(keyword) ||
+
+      (item.brand || "")
+        .toLowerCase()
+        .includes(keyword) ||
+
+      (item.category || "")
+        .toLowerCase()
+        .includes(keyword)
     );
-
   });
-
 
   // =========================
   // 關閉搜尋
   // =========================
 
   function closeSearch() {
-
     setSearchText("");
     setShowSearch(false);
   }
-
 
   return (
     <div className="layout">
@@ -313,36 +306,12 @@ function Skincare() {
         toggleMenu={toggleMenu}
       />
 
-
-      {/* 遮罩 */}
-
-      {showForm && (
-        <div
-          className="popup-overlay"
-          onClick={() => {
-            setShowForm(false);
-            resetForm();
-          }}
-        />
-      )}
-
-
-      {showMenu && (
-        <div
-          className="popup-overlay"
-          onClick={() => setShowMenu(false)}
-        />
-      )}
-
-
       <div
         className="main"
         onClick={() => {
-
           if (showSearch) {
             closeSearch();
           }
-
         }}
       >
 
@@ -361,14 +330,10 @@ function Skincare() {
             <button
               className="search-btn"
               onClick={(e) => {
-
                 e.stopPropagation();
-
                 setShowSearch(true);
-
               }}
             >
-
               <svg
                 viewBox="0 0 24 24"
                 width="22"
@@ -379,7 +344,6 @@ function Skincare() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-
                 <circle
                   cx="11"
                   cy="11"
@@ -392,9 +356,7 @@ function Skincare() {
                   x2="21"
                   y2="21"
                 />
-
               </svg>
-
             </button>
 
           ) : (
@@ -428,7 +390,7 @@ function Skincare() {
 
 
         {/* =========================
-            Loading
+            商品 Loading
         ========================= */}
 
         {loadingProducts ? (
@@ -445,78 +407,55 @@ function Skincare() {
 
         ) : (
 
-          <div className="info-grid">
+          /* =========================
+             商品列表
+          ========================= */
 
-            {filteredProducts.map(item => (
+          <div className="cosmetics-list">
+
+            {filteredProducts.map((item) => (
 
               <div
                 key={item.id}
-                className="info-box"
+                className="cosmetic-card"
+
+                onClick={() => {
+                  setSelectedProduct(item);
+                  setShowDetail(true);
+                }}
               >
 
-                {/* 三個點 */}
+                {/* 商品照片 */}
 
-                <button
-                  className="more-btn"
-                  onClick={(e) => {
-
-                    e.stopPropagation();
-
-                    const rect =
-                      e.currentTarget.getBoundingClientRect();
-
-                    const menuWidth = 100;
-
-                    const screenWidth =
-                      window.innerWidth;
-
-                    let leftPosition =
-                      rect.left - 20;
+                <div className="cosmetic-photo">
+                  <span>📷</span>
+                </div>
 
 
-                    if (
-                      rect.left + menuWidth >
-                      screenWidth
-                    ) {
+                {/* 商品資訊 */}
 
-                      leftPosition =
-                        rect.right - menuWidth;
+                <div className="cosmetic-info">
 
-                    }
+                  <p className="cosmetic-brand">
+                    {item.brand}
+                  </p>
 
+                  <h3 className="cosmetic-name">
+                    {item.product_name}
+                  </h3>
 
-                    setMenuPosition({
+                  <p className="cosmetic-category">
+                    {item.category || "-"}
+                  </p>
 
-                      top: rect.bottom + 8,
-
-                      left: leftPosition
-
-                    });
-
-
-                    setSelectedProduct(item);
-
-                    setShowMenu(true);
-
-                  }}
-                >
-                  ⋮
-                </button>
+                </div>
 
 
-                <h3 className="product-name">
-                  {item.product_name}
-                </h3>
+                {/* 箭頭 */}
 
-
-                <p className="product-brand">
-                  {item.brand}
-                </p>
-
-
-                <p className="product-shade">
-                  {item.category || "-"}
-                </p>
+                <div className="cosmetic-arrow">
+                  ›
+                </div>
 
               </div>
 
@@ -534,11 +473,8 @@ function Skincare() {
         <button
           className="add-btn"
           onClick={() => {
-
             resetForm();
-
             setShowForm(true);
-
           }}
         >
           ＋
@@ -546,73 +482,147 @@ function Skincare() {
 
 
         {/* =========================
-            編輯 / 刪除
+            產品詳細資料
         ========================= */}
 
-        {showMenu && (
+        {showDetail && selectedProduct && (
 
-          <div
-            className="popup-menu"
-            style={{
-              top: menuPosition.top,
-              left: menuPosition.left
-            }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
+          <>
 
-            <button
+            <div
+              className="product-detail-overlay"
               onClick={() => {
-
-                setForm({
-
-                  product_name:
-                    selectedProduct.product_name,
-
-                  brand:
-                    selectedProduct.brand,
-
-                  category:
-                    selectedProduct.category,
-
-                  manufacture_date:
-                    selectedProduct.manufacture_date || "",
-
-                  expire_months:
-                    selectedProduct.expire_months || "",
-
-                  expire_date:
-                    selectedProduct.expire_date || ""
-
-                });
-
-
-                setDateMode(
-                  selectedProduct.date_mode ||
-                  "manufacture"
-                );
-
-
-                setEditMode(true);
-
-                setShowMenu(false);
-
-                setShowForm(true);
-
+                setShowDetail(false);
+                setSelectedProduct(null);
               }}
+            />
+
+            <div
+              className="product-detail"
+              onClick={(e) => e.stopPropagation()}
             >
-              ✏️ 編輯
-            </button>
+
+              <button
+                className="detail-close"
+                onClick={() => {
+                  setShowDetail(false);
+                  setSelectedProduct(null);
+                }}
+              >
+                ✕
+              </button>
 
 
-            <button
-              onClick={deleteProduct}
-            >
-              🗑️ 刪除
-            </button>
+              <div className="detail-photo">
+                <span>📷</span>
+              </div>
 
-          </div>
+
+              <p className="detail-brand">
+                {selectedProduct.brand}
+              </p>
+
+              <h2>
+                {selectedProduct.product_name}
+              </h2>
+
+
+              <div className="detail-info">
+
+                <div>
+                  <span>分類</span>
+
+                  <strong>
+                    {selectedProduct.category || "-"}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>製造日期</span>
+
+                  <strong>
+                    {selectedProduct.manufacture_date || "-"}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>保存期限</span>
+
+                  <strong>
+                    {selectedProduct.expire_months
+                      ? `${selectedProduct.expire_months} 個月`
+                      : "-"}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>有效期限</span>
+
+                  <strong>
+                    {selectedProduct.expire_date || "-"}
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div className="detail-actions">
+
+                <button
+                  className="edit-product-btn"
+                  onClick={() => {
+
+                    setForm({
+                      product_name:
+                        selectedProduct.product_name,
+
+                      brand:
+                        selectedProduct.brand,
+
+                      category:
+                        selectedProduct.category,
+
+                      manufacture_date:
+                        selectedProduct.manufacture_date || "",
+
+                      expire_months:
+                        selectedProduct.expire_months || "",
+
+                      expire_date:
+                        selectedProduct.expire_date || ""
+                    });
+
+                    setDateMode(
+                      selectedProduct.date_mode ||
+                      "manufacture"
+                    );
+
+                    setEditMode(true);
+
+                    setShowDetail(false);
+
+                    setShowForm(true);
+                  }}
+                >
+                  ✏️ 編輯
+                </button>
+
+
+                <button
+                  className="delete-product-btn"
+                  onClick={deleteProduct}
+                >
+                  🗑️ 刪除
+                </button>
+
+              </div>
+
+            </div>
+
+          </>
 
         )}
 
@@ -623,104 +633,177 @@ function Skincare() {
 
         {showForm && (
 
-          <div
-            className="popup"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
+          <>
 
-            <input
-              name="product_name"
-              value={form.product_name}
-              placeholder="名稱"
-              onChange={handleChange}
+            <div
+              className="popup-overlay"
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
             />
 
 
-            <input
-              name="brand"
-              value={form.brand}
-              placeholder="品牌"
-              onChange={handleChange}
-            />
-
-
-            <input
-              name="category"
-              value={form.category}
-              placeholder="分類"
-              onChange={handleChange}
-            />
-
-
-            <select
-              value={dateMode}
-              onChange={(e) =>
-                setDateMode(e.target.value)
-              }
+            <div
+              className="popup"
+              onClick={(e) => e.stopPropagation()}
             >
 
-              <option value="manufacture">
-                製造日期 + 保存期限
-              </option>
-
-              <option value="direct">
-                直接輸入有效日期
-              </option>
-
-            </select>
-
-
-            {dateMode === "manufacture" ? (
-
-              <>
-
-                <input
-                  type="date"
-                  name="manufacture_date"
-                  value={form.manufacture_date}
-                  onChange={handleChange}
-                />
+              <button
+                className="form-close"
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+              >
+                ✕
+              </button>
 
 
-                <input
-                  type="number"
-                  name="expire_months"
-                  value={form.expire_months}
-                  placeholder="保存(月)"
-                  onChange={handleChange}
-                />
+              <h2>
+                {editMode
+                  ? "編輯保養品"
+                  : "新增保養品"}
+              </h2>
 
-              </>
 
-            ) : (
+              {/* 照片 */}
+
+              <div className="photo-upload">
+
+                <div className="photo-upload-icon">
+                  📷
+                </div>
+
+                <span>
+                  新增產品照片
+                </span>
+
+              </div>
+
 
               <input
-                type="date"
-                name="expire_date"
-                value={form.expire_date}
+                name="product_name"
+                value={form.product_name}
+                placeholder="產品名稱"
                 onChange={handleChange}
               />
 
-            )}
+
+              <input
+                name="brand"
+                value={form.brand}
+                placeholder="品牌"
+                onChange={handleChange}
+              />
 
 
-            <button
-              onClick={
-                editMode
-                  ? updateProduct
-                  : createProduct
-              }
-            >
+              <input
+                name="category"
+                value={form.category}
+                placeholder="分類"
+                onChange={handleChange}
+              />
 
-              {editMode
-                ? "儲存修改"
-                : "新增"}
 
-            </button>
+              <select
+                value={dateMode}
+                onChange={(e) =>
+                  setDateMode(e.target.value)
+                }
+              >
 
-          </div>
+                <option value="manufacture">
+                  製造日期 + 保存期限
+                </option>
+
+                <option value="direct">
+                  直接輸入有效日期
+                </option>
+
+              </select>
+
+
+              {dateMode === "manufacture" ? (
+
+                <>
+
+                  <div className="date-input-wrapper">
+
+                    <span
+                      className={`date-placeholder ${
+                        form.manufacture_date
+                          ? "has-value"
+                          : ""
+                      }`}
+                    >
+                      {form.manufacture_date ||
+                        "請輸入日期"}
+                    </span>
+
+                    <input
+                      type="date"
+                      name="manufacture_date"
+                      value={form.manufacture_date}
+                      onChange={handleChange}
+                    />
+
+                  </div>
+
+
+                  <input
+                    type="number"
+                    name="expire_months"
+                    value={form.expire_months}
+                    placeholder="保存期限（月）"
+                    onChange={handleChange}
+                  />
+
+                </>
+
+              ) : (
+
+                <div className="date-input-wrapper">
+
+                  <span
+                    className={`date-placeholder ${
+                      form.expire_date
+                        ? "has-value"
+                        : ""
+                    }`}
+                  >
+                    {form.expire_date ||
+                      "請輸入日期"}
+                  </span>
+
+                  <input
+                    type="date"
+                    name="expire_date"
+                    value={form.expire_date}
+                    onChange={handleChange}
+                  />
+
+                </div>
+
+              )}
+
+
+              <button
+                className="form-submit-btn"
+                onClick={
+                  editMode
+                    ? updateProduct
+                    : createProduct
+                }
+              >
+                {editMode
+                  ? "儲存修改"
+                  : "新增產品"}
+              </button>
+
+            </div>
+
+          </>
 
         )}
 
