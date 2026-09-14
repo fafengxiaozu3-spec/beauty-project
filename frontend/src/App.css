@@ -1064,100 +1064,449 @@ body {
 /* =========================
    即將過期
 ========================= */
+.expiry-summary {
+  width: 100%;
+  min-height: 76px;
+  margin-bottom: 28px;
+  padding: 16px 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: #fff7f9;
+  border: 1px solid #f7e2e7;
+  border-radius: 16px;
+  box-sizing: border-box;
+}
+
+.expiry-summary-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+  border-radius: 12px;
+
+  font-size: 22px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  flex-shrink: 0;
+}
+
+.expiry-summary-title {
+  margin: 0 0 3px;
+
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+}
+
+.expiry-summary-text {
+  margin: 0;
+
+  font-size: 13px;
+  color: #999;
+}
+
+
+/* =========================
+   Section
+========================= */
+
+.expiry-section {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.expiry-section-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 14px;
+}
+
+.expiry-section-title span:first-child {
+  font-size: 20px;
+}
+
+.expiry-section-title h2 {
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.expiry-count {
+  min-width: 24px;
+  height: 24px;
+
+  padding: 0 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  background: #fff0f3;
+  color: #ef8da4;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   Product List
+========================= */
 
 .expiry-list {
   width: 100%;
 
   display: flex;
   flex-direction: column;
-
   gap: 12px;
 }
 
-.expiry-item {
-  width: 100%;
-  min-height: 60px;
 
-  padding: 12px 18px;
+/* =========================
+   Product Card
+========================= */
+
+.expiry-card {
+  width: 100%;
+  min-height: 78px;
+
+  padding: 14px 16px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  gap: 16px;
+
   background: #fff;
 
-  border-radius: 12px;
+  border-radius: 15px;
 
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.045);
 
-  gap: 15px;
+  box-sizing: border-box;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.expiry-product {
+.expiry-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+/* =========================
+   Expiry Product Photo
+========================= */
+
+.expiry-photo {
+  width: 56px;
+  height: 56px;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+  overflow: hidden;
+
+  background: #fff5f7;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expiry-photo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+.expiry-photo-empty {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+}
+
+/* =========================
+   Product Info
+========================= */
+
+.expiry-card-info {
   min-width: 0;
   flex: 1;
 }
 
-.expiry-name {
-  font-size: 16px;
+.expiry-brand {
+  margin-bottom: 3px;
+
+  font-size: 12px;
+  color: #aaa;
+}
+
+.expiry-product-name {
+  font-size: 15px;
   font-weight: 600;
+  color: #333;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.expiry-days {
+.expiry-shade {
+  margin-left: 5px;
+
+  font-size: 13px;
+  font-weight: 400;
+  color: #999;
+}
+
+.expiry-category {
+  margin-top: 4px;
+
+  font-size: 12px;
+  color: #aaa;
+}
+
+
+/* =========================
+   Right Side
+========================= */
+
+.expiry-card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
   flex-shrink: 0;
-
-  font-size: 16px;
-  font-weight: 600;
-
-  color: #ff8fab;
 }
 
-.expiry-days.danger {
-  color: #ff3b5c;
+.expiry-date {
+  min-width: 58px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  gap: 2px;
 }
 
-.expiry-days.expired {
-  color: #ff3b5c;
+.expiry-date-label {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.expiry-date-value {
+  font-size: 15px;
   font-weight: 700;
+  color: #ef9bad;
 }
 
-.expiry-empty {
-  width: 100%;
+.expiry-date.danger .expiry-date-value {
+  color: #ff6f8c;
+}
 
-  padding: 40px 20px;
+.expiry-date.expired .expiry-date-value {
+  color: #ff3b5c;
+}
+
+
+/* =========================
+   Delete Button
+========================= */
+
+.expiry-delete-btn {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #fff5f6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.expiry-delete-btn:hover {
+  background: #ffe4e8;
+  transform: scale(1.05);
+}
+
+.expiry-delete-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+
+/* =========================
+   Empty
+========================= */
+
+.expiry-section-empty {
+  width: 100%;
+  padding: 28px 20px;
 
   text-align: center;
 
-  color: #777;
+  background: #fff;
+
+  border-radius: 15px;
+
+  color: #aaa;
+  font-size: 14px;
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.035);
+
+  box-sizing: border-box;
 }
 
-/* 手機版 */
-@media (max-width: 768px) {
 
-  .expiry-list {
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 600px) {
+
+  .expiry-photo {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 11px;
+  }
+
+  .expiry-photo-empty {
+    font-size: 20px;
+  }
+
+  .expiry-summary {
+    margin-bottom: 24px;
+    padding: 14px 16px;
+
+    border-radius: 14px;
+  }
+
+  .expiry-summary-icon {
+    width: 40px;
+    height: 40px;
+
+    font-size: 20px;
+  }
+
+  .expiry-summary-title {
+    font-size: 14px;
+  }
+
+  .expiry-summary-text {
+    font-size: 12px;
+  }
+
+  .expiry-section {
+    margin-bottom: 26px;
+  }
+
+  .expiry-section-title {
+    margin-bottom: 12px;
+  }
+
+  .expiry-section-title h2 {
+    font-size: 17px;
+  }
+
+  .expiry-card {
+    min-height: 72px;
+
+    padding: 12px 13px;
+
     gap: 10px;
+
+    border-radius: 13px;
   }
 
-  .expiry-item {
-    min-height: 58px;
-
-    padding: 12px 15px;
-
-    border-radius: 12px;
+  .expiry-brand {
+    font-size: 11px;
   }
 
-  .expiry-name {
-    font-size: 15px;
+  .expiry-product-name {
+    font-size: 14px;
   }
 
-  .expiry-days {
-    font-size: 15px;
+  .expiry-shade {
+    font-size: 12px;
   }
 
+  .expiry-category {
+    font-size: 11px;
+  }
+
+  .expiry-card-right {
+    gap: 8px;
+  }
+
+  .expiry-date {
+    min-width: 48px;
+  }
+
+  .expiry-date-label {
+    font-size: 10px;
+  }
+
+  .expiry-date-value {
+    font-size: 14px;
+  }
+
+  .expiry-delete-btn {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+  }
+
+  .expiry-section-empty {
+    padding: 24px 15px;
+
+    font-size: 13px;
+  }
 }
 
 /* =========================
