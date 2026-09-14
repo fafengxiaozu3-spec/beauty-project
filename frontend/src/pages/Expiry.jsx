@@ -22,11 +22,22 @@ function Expiry() {
           return;
         }
 
-        const res = await fetch(
-          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${profile.userId}`
-        );
+        const [cosmeticsRes, skincareRes] = await Promise.all([
+          fetch(
+            `https://mybeautystudio-backend.onrender.com/api/products?user_id=${profile.userId}&product_type=cosmetics`
+          ),
+          fetch(
+            `https://mybeautystudio-backend.onrender.com/api/products?user_id=${profile.userId}&product_type=skincare`
+          )
+        ]);
 
-        const data = await res.json();
+        const cosmeticsData = await cosmeticsRes.json();
+        const skincareData = await skincareRes.json();
+
+        const data = [
+          ...cosmeticsData,
+          ...skincareData
+        ];
 
         // 今天
         const today = new Date();
