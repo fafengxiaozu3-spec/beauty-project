@@ -10,15 +10,10 @@ function Shopping() {
   const [loadingItems, setLoadingItems] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
-  const [menuPosition, setMenuPosition] = useState({
-    top: 0,
-    left: 0
-  });
 
   const [form, setForm] = useState({
     item_name: "",
@@ -48,7 +43,10 @@ function Shopping() {
     async function start() {
       const profile = await initLiff();
 
-      if (!profile) return;
+      if (!profile) {
+        setLoadingItems(false);
+        return;
+      }
 
       loadShoppingList(profile.userId);
     }
@@ -71,7 +69,6 @@ function Shopping() {
       const data = await res.json();
 
       setItems(data);
-
     } catch (err) {
       console.log("取得購物清單失敗:", err);
     } finally {
@@ -109,7 +106,6 @@ function Shopping() {
 
           body: JSON.stringify({
             user_id: userId,
-
             item_name: form.item_name,
             brand: form.brand,
             category: form.category,
@@ -120,14 +116,21 @@ function Shopping() {
       );
 
       setShowForm(false);
-
       resetForm();
 
       loadShoppingList(userId);
-
     } catch (err) {
       console.log("新增購物清單失敗:", err);
     }
+  }
+
+  // =========================
+  // 點擊購物項目
+  // =========================
+
+  function openDetail(item) {
+    setSelectedItem(item);
+    setShowDetail(true);
   }
 
   // =========================
@@ -135,8 +138,10 @@ function Shopping() {
   // =========================
 
   async function deleteItem() {
+    if (!selectedItem) return;
+
     const confirmDelete = window.confirm(
-      `確定要刪除 ${selectedItem.brand} ${selectedItem.item_name} 嗎？`
+      `確定要刪除 ${selectedItem.brand || ""} ${selectedItem.item_name} 嗎？`
     );
 
     if (!confirmDelete) return;
@@ -149,15 +154,35 @@ function Shopping() {
         }
       );
 
-      loadShoppingList(
-        localStorage.getItem("lineUserId")
-      );
+      const userId = localStorage.getItem("lineUserId");
 
-      setShowMenu(false);
+      setShowDetail(false);
+      setSelectedItem(null);
 
+      loadShoppingList(userId);
     } catch (err) {
       console.log("刪除購物清單失敗:", err);
     }
+  }
+
+  // =========================
+  // 開啟編輯
+  // =========================
+
+  function openEdit() {
+    if (!selectedItem) return;
+
+    setForm({
+      item_name: selectedItem.item_name || "",
+      brand: selectedItem.brand || "",
+      category: selectedItem.category || "",
+      source: selectedItem.source || "",
+      note: selectedItem.note || ""
+    });
+
+    setEditMode(true);
+    setShowDetail(false);
+    setShowForm(true);
   }
 
   // =========================
@@ -165,6 +190,8 @@ function Shopping() {
   // =========================
 
   async function updateItem() {
+    if (!selectedItem) return;
+
     try {
       await fetch(
         `https://mybeautystudio-backend.onrender.com/api/shopping-list/${selectedItem.id}`,
@@ -185,13 +212,13 @@ function Shopping() {
         }
       );
 
-      loadShoppingList(
-        localStorage.getItem("lineUserId")
-      );
+      const userId = localStorage.getItem("lineUserId");
 
-      setEditMode(false);
       setShowForm(false);
+      setSelectedItem(null);
+      resetForm();
 
+      loadShoppingList(userId);
     } catch (err) {
       console.log("修改購物清單失敗:", err);
     }
@@ -207,7 +234,7 @@ function Shopping() {
       />
 
       {/* =========================
-          點背景關閉
+          新增 / 編輯背景
       ========================= */}
 
       {showForm && (
@@ -220,10 +247,17 @@ function Shopping() {
         />
       )}
 
-      {showMenu && (
+      {/* =========================
+          詳細內容背景
+      ========================= */}
+
+      {showDetail && (
         <div
           className="popup-overlay"
-          onClick={() => setShowMenu(false)}
+          onClick={() => {
+            setShowDetail(false);
+            setSelectedItem(null);
+          }}
         />
       )}
 
@@ -241,11 +275,8 @@ function Shopping() {
         {loadingItems ? (
 
           <div className="product-loading">
-
             <div className="loading-circle"></div>
-
             <p>正在取得你的購物清單...</p>
-
           </div>
 
         ) : (
@@ -265,6 +296,7 @@ function Shopping() {
                 <div
                   key={item.id}
                   className="shopping-item"
+                  onClick={() => openDetail(item)}
                 >
 
                   <div className="shopping-info">
@@ -277,43 +309,17 @@ function Shopping() {
                       {item.item_name}
                     </span>
 
+                    {item.category && (
+                      <span className="shopping-category">
+                        {item.category}
+                      </span>
+                    )}
+
                   </div>
 
-                  <button
-                    className="more-btn"
-                    onClick={(e) => {
-
-                      const rect =
-                        e.currentTarget.getBoundingClientRect();
-
-                      const menuWidth = 100;
-
-                      const screenWidth =
-                        window.innerWidth;
-
-                      let leftPosition =
-                        rect.left - 20;
-
-                      if (
-                        rect.left + menuWidth >
-                        screenWidth
-                      ) {
-                        leftPosition =
-                          rect.right - menuWidth;
-                      }
-
-                      setMenuPosition({
-                        top: rect.bottom + 8,
-                        left: leftPosition
-                      });
-
-                      setSelectedItem(item);
-                      setShowMenu(true);
-
-                    }}
-                  >
-                    ⋮
-                  </button>
+                  <div className="shopping-arrow">
+                    ›
+                  </div>
 
                 </div>
 
@@ -340,56 +346,86 @@ function Shopping() {
         </button>
 
         {/* =========================
-            編輯 / 刪除選單
+            詳細內容
         ========================= */}
 
-        {showMenu && (
+        {showDetail && selectedItem && (
 
           <div
-            className="popup-menu"
-            style={{
-              top: menuPosition.top,
-              left: menuPosition.left
-            }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            className="product-detail shopping-detail"
+            onClick={(e) => e.stopPropagation()}
           >
 
             <button
+              className="detail-close"
               onClick={() => {
-
-                setForm({
-                  item_name:
-                    selectedItem.item_name || "",
-
-                  brand:
-                    selectedItem.brand || "",
-
-                  category:
-                    selectedItem.category || "",
-
-                  source:
-                    selectedItem.source || "",
-
-                  note:
-                    selectedItem.note || ""
-                });
-
-                setEditMode(true);
-                setShowMenu(false);
-                setShowForm(true);
-
+                setShowDetail(false);
+                setSelectedItem(null);
               }}
             >
-              ✏️ 編輯
+              ×
             </button>
 
-            <button
-              onClick={deleteItem}
-            >
-              🗑️ 刪除
-            </button>
+            <div className="shopping-detail-header">
+
+              <div className="shopping-detail-icon">
+                🛒
+              </div>
+
+              <div>
+                <p className="product-detail-brand">
+                  {selectedItem.brand}
+                </p>
+
+                <h2>
+                  {selectedItem.item_name}
+                </h2>
+              </div>
+
+            </div>
+
+            <div className="product-detail-info">
+
+              <div className="detail-row">
+                <span>分類</span>
+                <strong>
+                  {selectedItem.category}
+                </strong>
+              </div>
+
+              <div className="detail-row">
+                <span>購買來源</span>
+                <strong>
+                  {selectedItem.source}
+                </strong>
+              </div>
+
+              <div className="detail-row">
+                <span>備註</span>
+                <strong>
+                  {selectedItem.note}
+                </strong>
+              </div>
+
+            </div>
+
+            <div className="product-detail-actions">
+
+              <button
+                className="detail-edit-btn"
+                onClick={openEdit}
+              >
+                ✏️ 編輯
+              </button>
+
+              <button
+                className="detail-delete-btn"
+                onClick={deleteItem}
+              >
+                🗑️ 刪除
+              </button>
+
+            </div>
 
           </div>
 
@@ -403,10 +439,22 @@ function Shopping() {
 
           <div
             className="popup"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
+
+            <button
+              className="detail-close"
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
+            >
+              ×
+            </button>
+
+            <h2>
+              {editMode ? "編輯購物清單" : "新增購物清單"}
+            </h2>
 
             <input
               name="item_name"
@@ -444,6 +492,7 @@ function Shopping() {
             />
 
             <button
+              className="form-submit-btn"
               onClick={
                 editMode
                   ? updateItem
