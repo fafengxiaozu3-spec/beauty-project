@@ -1618,6 +1618,197 @@ body {
 
 
 /* =========================
+   Shopping 詳細資料
+========================= */
+
+.shopping-detail {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  width: calc(100% - 32px);
+  max-width: 420px;
+
+  box-sizing: border-box;
+  padding: 24px 20px 20px;
+
+  background: #fff;
+  border-radius: 22px;
+
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+
+  z-index: 1001;
+}
+
+.shopping-detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f8f4f5;
+  color: #777;
+
+  font-size: 22px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shopping-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding-right: 35px;
+  margin-bottom: 24px;
+}
+
+.shopping-detail-icon {
+  width: 52px;
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #fff0f4;
+
+  font-size: 24px;
+}
+
+.shopping-detail-title {
+  min-width: 0;
+}
+
+.shopping-detail-title p {
+  margin: 0 0 4px;
+
+  color: #aaa;
+  font-size: 13px;
+}
+
+.shopping-detail-title h2 {
+  margin: 0;
+
+  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   Shopping 詳細內容
+========================= */
+
+.shopping-detail-info {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  border-top: 1px solid #f1e8eb;
+}
+
+.shopping-detail-row {
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 12px 2px;
+
+  border-bottom: 1px solid #f1e8eb;
+}
+
+.shopping-detail-row span {
+  flex-shrink: 0;
+
+  color: #999;
+  font-size: 14px;
+}
+
+.shopping-detail-row strong {
+  min-width: 0;
+
+  color: #444;
+  font-size: 14px;
+  font-weight: 500;
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   編輯 / 刪除按鈕
+========================= */
+
+.shopping-detail-actions {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.shopping-edit-btn,
+.shopping-delete-btn {
+  flex: 1;
+
+  height: 44px;
+
+  border: none;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shopping-edit-btn {
+  background: #fff0f4;
+  color: #d9879d;
+}
+
+.shopping-delete-btn {
+  background: #fff0f0;
+  color: #ff5b6e;
+}
+
+.shopping-edit-btn:active,
+.shopping-edit-btn:focus,
+.shopping-delete-btn:active,
+.shopping-delete-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* =========================
    手機版購物清單
 ========================= */
 
@@ -1649,6 +1840,49 @@ body {
     width: 28px;
     height: 28px;
     font-size: 23px;
+  }
+
+
+  /* 購物清單詳細視窗 */
+
+  .shopping-detail {
+    width: calc(100% - 28px);
+    padding: 22px 18px 18px;
+    border-radius: 20px;
+  }
+
+  .shopping-detail-header {
+    gap: 12px;
+    padding-right: 32px;
+    margin-bottom: 20px;
+  }
+
+  .shopping-detail-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+
+  .shopping-detail-title p {
+    font-size: 12px;
+  }
+
+  .shopping-detail-title h2 {
+    font-size: 18px;
+  }
+
+  .shopping-detail-row {
+    min-height: 50px;
+    gap: 15px;
+  }
+
+  .shopping-detail-row span,
+  .shopping-detail-row strong {
+    font-size: 13px;
+  }
+
+  .shopping-detail-actions {
+    margin-top: 18px;
   }
 
 }

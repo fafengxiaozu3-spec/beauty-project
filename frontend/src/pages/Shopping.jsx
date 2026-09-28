@@ -352,12 +352,12 @@ function Shopping() {
         {showDetail && selectedItem && (
 
           <div
-            className="product-detail shopping-detail"
+            className="shopping-detail"
             onClick={(e) => e.stopPropagation()}
           >
 
             <button
-              className="detail-close"
+              className="shopping-detail-close"
               onClick={() => {
                 setShowDetail(false);
                 setSelectedItem(null);
@@ -372,54 +372,56 @@ function Shopping() {
                 🛒
               </div>
 
-              <div>
-                <p className="product-detail-brand">
+              <div className="shopping-detail-title">
+
+                <p>
                   {selectedItem.brand}
                 </p>
 
                 <h2>
                   {selectedItem.item_name}
                 </h2>
+
               </div>
 
             </div>
 
-            <div className="product-detail-info">
+            <div className="shopping-detail-info">
 
-              <div className="detail-row">
+              <div className="shopping-detail-row">
                 <span>分類</span>
                 <strong>
-                  {selectedItem.category}
+                  {selectedItem.category || "未分類"}
                 </strong>
               </div>
 
-              <div className="detail-row">
+              <div className="shopping-detail-row">
                 <span>購買來源</span>
                 <strong>
-                  {selectedItem.source}
+                  {selectedItem.source || "未填寫"}
                 </strong>
               </div>
 
-              <div className="detail-row">
+              <div className="shopping-detail-row">
                 <span>備註</span>
                 <strong>
-                  {selectedItem.note}
+                  {selectedItem.note || "沒有備註"}
                 </strong>
               </div>
 
             </div>
 
-            <div className="product-detail-actions">
+            <div className="shopping-detail-actions">
 
               <button
-                className="detail-edit-btn"
+                className="shopping-edit-btn"
                 onClick={openEdit}
               >
                 ✏️ 編輯
               </button>
 
               <button
-                className="detail-delete-btn"
+                className="shopping-delete-btn"
                 onClick={deleteItem}
               >
                 🗑️ 刪除
