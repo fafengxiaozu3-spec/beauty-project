@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>新增美妝產品</title>
+</head>
+<body>
+    <h1>新增美妝產品</h1>
+
+    <form method="POST">
+        <div>
+            <label>使用者 ID：</label>
+            <input type="text" name="user_id" value="demo_user">
+        </div>
+
+        <div>
+            <label>產品名稱：</label>
+            <input type="text" name="product_name" required>
+        </div>
+
+        <div>
+            <label>品牌：</label>
+            <input type="text" name="brand">
+        </div>
+
+        <div>
+            <label>類別：</label>
+            <input type="text" name="category">
+        </div>
+
+        <div>
+            <label>色號：</label>
+            <input type="text" name="shade">
+        </div>
+
+        <hr>
+
+        <div>
+            <label>日期填寫方式：</label>
+            <select name="date_mode" id="date_mode" required>
+                <option value="manufacture">製造日期 + 保存期限</option>
+                <option value="direct">直接填有效日期</option>
+            </select>
+        </div>
+
+        <div id="manufacture_fields">
+            <div>
+                <label>製造日期：</label>
+                <input type="date" name="manufacture_date">
+            </div>
+
+            <div>
+                <label>保存期限（月）：</label>
+                <input type="number" name="expire_months" min="1" value="36">
+            </div>
+        </div>
+
+        <div id="direct_fields" style="display: none;">
+            <div>
+                <label>有效日期：</label>
+                <input type="date" name="expire_date">
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit">新增產品</button>
+    </form>
+
+    <p>
+        <a href="/products">回產品列表</a>
+    </p>
+
+    <script>
+        const dateMode = document.getElementById("date_mode");
+        const manufactureFields = document.getElementById("manufacture_fields");
+        const directFields = document.getElementById("direct_fields");
+
+        function updateDateFields() {
+            if (dateMode.value === "manufacture") {
+                manufactureFields.style.display = "block";
+                directFields.style.display = "none";
+            } else if (dateMode.value === "direct") {
+                manufactureFields.style.display = "none";
+                directFields.style.display = "block";
+            }
+        }
+
+        dateMode.addEventListener("change", updateDateFields);
+        updateDateFields();
+    </script>
+</body>
+</html>
