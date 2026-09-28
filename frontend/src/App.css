@@ -1616,27 +1616,6 @@ body {
   font-weight: 300;
 }
 
-.shopping-detail-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.shopping-detail-icon {
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: #fff0f4;
-
-  font-size: 24px;
-}
 
 /* =========================
    手機版購物清單
@@ -1670,16 +1649,6 @@ body {
     width: 28px;
     height: 28px;
     font-size: 23px;
-  }
-  .shopping-detail-header {
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .shopping-detail-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
   }
 
 }
