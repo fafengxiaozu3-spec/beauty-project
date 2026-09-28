@@ -40,6 +40,18 @@ function Shopping() {
   }
 
   useEffect(() => {
+    if (showForm || showDetail) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showForm, showDetail]);
+
+  useEffect(() => {
     async function start() {
       const profile = await initLiff();
 
