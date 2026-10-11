@@ -11,6 +11,10 @@ function Cosmetics() {
 
   const [showForm, setShowForm] = useState(false);
 
+  // 商品照片
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -54,6 +58,9 @@ function Cosmetics() {
       expire_date: ""
     });
 
+    setSelectedImage(null);
+    setImagePreview("");
+    
     setDateMode("manufacture");
   }
 
@@ -112,6 +119,32 @@ function Cosmetics() {
       ...form,
       [e.target.name]: e.target.value
     });
+  }
+
+  // 選擇商品照片
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // 只允許圖片格式
+    if (!file.type.startsWith("image/")) {
+      alert("請選擇圖片檔案");
+      e.target.value = "";
+      return;
+    }
+
+    // 限制圖片大小為 10 MB
+    if (file.size > 10 * 1024 * 1024) {
+      alert("圖片大小不能超過 10 MB");
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedImage(file);
+
+    // 顯示圖片預覽
+    setImagePreview(URL.createObjectURL(file));
   }
 
   // =========================
@@ -678,19 +711,50 @@ function Cosmetics() {
               </h2>
 
 
-              {/* 照片 */}
+              {/* 照片上傳 */}
 
-              <div className="photo-upload">
+              <label className="photo-upload" htmlFor="product-image">
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="商品照片預覽"
+                    className="photo-upload-preview"
+                  />
+                ) : (
+                  <>
+                    <div className="photo-upload-icon">
+                      📷
+                    </div>
 
-                <div className="photo-upload-icon">
-                  📷
-                </div>
+                    <span>新增產品照片</span>
+                    <small>點擊選擇圖片</small>
+                  </>
+                )}
+              </label>
 
-                <span>
-                  新增產品照片
-                </span>
+              <input
+                id="product-image"
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImageChange}
+              />
 
-              </div>
+              {imagePreview && (
+                <button
+                  type="button"
+                  className="photo-remove-btn"
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setImagePreview("");
+
+                    const input = document.getElementById("product-image");
+                    if (input) input.value = "";
+                  }}
+                >
+                  移除照片
+                </button>
+              )}
 
 
               <input
