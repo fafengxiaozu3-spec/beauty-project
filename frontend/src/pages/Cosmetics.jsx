@@ -10,6 +10,10 @@ function Cosmetics() {
   const [loadingProducts, setLoadingProducts] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
+  // 商品照片
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
@@ -29,7 +33,8 @@ function Cosmetics() {
     shade: "",
     manufacture_date: "",
     expire_months: "",
-    expire_date: ""
+    expire_date: "",
+    image_url: ""
   });
 
   const [dateMode, setDateMode] = useState("manufacture");
@@ -42,6 +47,8 @@ function Cosmetics() {
   // 重設表單
   // =========================
   function resetForm() {
+    setImageFile(null);
+    setImagePreview("");
     setEditMode(false);
 
     setForm({
@@ -51,7 +58,8 @@ function Cosmetics() {
       shade: "",
       manufacture_date: "",
       expire_months: "",
-      expire_date: ""
+      expire_date: "",
+      image_url: ""
     });
 
     setDateMode("manufacture");
@@ -113,6 +121,56 @@ function Cosmetics() {
       [e.target.name]: e.target.value
     });
   }
+  // 選擇商品照片
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("請選擇圖片檔案");
+      e.target.value = "";
+      return;
+    }
+
+    // 限制圖片大小為 10 MB
+    if (file.size > 10 * 1024 * 1024) {
+      alert("圖片不能超過 10 MB");
+      e.target.value = "";
+      return;
+    }
+
+    setImageFile(file);
+
+    // 顯示本機圖片預覽
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  // 上傳圖片至後端
+  async function uploadImage() {
+    if (!imageFile) {
+      return form.image_url || "";
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const res = await fetch(
+      "https://mybeautystudio-backend.onrender.com/api/upload-image",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.image_url) {
+      throw new Error(data.message || "圖片上傳失敗");
+    }
+
+    return data.image_url;
+  }
 
   // =========================
   // 新增產品
@@ -121,24 +179,32 @@ function Cosmetics() {
     try {
       const userId = localStorage.getItem("lineUserId");
 
-      await fetch(
+      if (!userId) {
+        alert("尚未取得 LINE 使用者資料，請重新開啟頁面");
+        return;
+      }
+
+      setUploadingImage(true);
+
+      // 先上傳照片，取得 Cloudinary 圖片網址
+      const imageUrl = await uploadImage();
+
+      // 再新增商品資料
+      const res = await fetch(
         "https://mybeautystudio-backend.onrender.com/api/products",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             user_id: userId,
-
             product_type: "cosmetics",
-
             product_name: form.product_name,
             brand: form.brand,
             category: form.category,
             shade: form.shade,
+            image_url: imageUrl,
 
             date_mode: dateMode,
 
@@ -160,14 +226,20 @@ function Cosmetics() {
         }
       );
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "新增商品失敗");
+      }
+
       setShowForm(false);
-
       resetForm();
-
-      loadProducts(userId);
-
+      await loadProducts(userId);
     } catch (err) {
-      console.log(err);
+      console.error("新增化妝品失敗：", err);
+      alert(err.message || "新增失敗，請稍後再試");
+    } finally {
+      setUploadingImage(false);
     }
   }
 
@@ -228,6 +300,7 @@ function Cosmetics() {
             brand: form.brand,
             category: form.category,
             shade: form.shade,
+            image_url: imageUrl,
 
             date_mode: dateMode,
 
@@ -257,6 +330,9 @@ function Cosmetics() {
       setShowForm(false);
 
       setShowDetail(false);
+
+      setUploadingImage(true);
+      const imageUrl = await uploadImage();
 
     } catch (err) {
       console.log(err);
@@ -437,7 +513,11 @@ function Cosmetics() {
                 >
 
                   <div className="cosmetic-photo">
-                    <span>📷</span>
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.product_name} />
+                    ) : (
+                      <span>📷</span>
+                    )}
                   </div>
 
                   <div className="cosmetic-info">
@@ -479,13 +559,15 @@ function Cosmetics() {
         ========================= */}
 
         <button
-          className="add-btn"
-          onClick={() => {
-            resetForm();
-            setShowForm(true);
-          }}
+          className="form-submit-btn"
+          disabled={uploadingImage}
+          onClick={editMode ? updateProduct : createProduct}
         >
-          ＋
+          {uploadingImage
+            ? "處理中..."
+            : editMode
+              ? "儲存修改"
+              : "新增產品"}
         </button>
 
 
@@ -522,7 +604,14 @@ function Cosmetics() {
 
 
               <div className="detail-photo">
-                <span>📷</span>
+                {selectedProduct.image_url ? (
+                  <img
+                    src={selectedProduct.image_url}
+                    alt={selectedProduct.product_name}
+                  />
+                ) : (
+                  <span>📷</span>
+                )}
               </div>
 
 
@@ -583,6 +672,9 @@ function Cosmetics() {
                   className="edit-product-btn"
                   onClick={() => {
 
+                    setImageFile(null);
+                    setImagePreview("");  
+
                     setForm({
                       product_name:
                         selectedProduct.product_name,
@@ -603,7 +695,9 @@ function Cosmetics() {
                         selectedProduct.expire_months || "",
 
                       expire_date:
-                        selectedProduct.expire_date || ""
+                        selectedProduct.expire_date || "",
+                      image_url: 
+                        selectedProduct.image_url || ""
                     });
 
                     setDateMode(
@@ -680,17 +774,46 @@ function Cosmetics() {
 
               {/* 照片 */}
 
-              <div className="photo-upload">
+              <label className="photo-upload">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  hidden
+                />
 
-                <div className="photo-upload-icon">
-                  📷
-                </div>
+                {imagePreview || form.image_url ? (
+                  <img
+                    src={imagePreview || form.image_url}
+                    alt="商品照片預覽"
+                    className="product-photo-preview"
+                  />
+                ) : (
+                  <>
+                    <div className="photo-upload-icon">📷</div>
+                    <span>點擊新增產品照片</span>
+                    <small>支援 JPG、PNG 等圖片格式</small>
+                  </>
+                )}
+              </label>
 
-                <span>
-                  新增產品照片
-                </span>
+              {imagePreview && (
+                <button
+                  type="button"
+                  className="remove-photo-btn"
+                  onClick={() => {
+                    setImageFile(null);
+                    setImagePreview("");
+                    setForm((prev) => ({ ...prev, image_url: "" }));
+                  }}
+                >
+                  移除照片
+                </button>
+              )}
 
-              </div>
+              {uploadingImage && (
+                <p className="image-upload-status">正在上傳照片...</p>
+              )}
 
 
               <input
