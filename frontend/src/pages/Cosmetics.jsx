@@ -147,6 +147,7 @@ function Cosmetics() {
     setImagePreview(URL.createObjectURL(file));
   }
 
+  
   // =========================
   // 新增產品
   // =========================
@@ -154,55 +155,89 @@ function Cosmetics() {
     try {
       const userId = localStorage.getItem("lineUserId");
 
-      await fetch(
+      if (!userId) {
+        alert("無法取得使用者資料，請重新開啟頁面");
+        return;
+      }
+
+      let imageUrl = "";
+
+      // 1. 如果有選擇照片，先上傳照片
+      if (selectedImage) {
+        const imageData = new FormData();
+        imageData.append("image", selectedImage);
+
+        const uploadRes = await fetch(
+          "https://mybeautystudio-backend.onrender.com/api/upload-image",
+          {
+            method: "POST",
+            body: imageData
+          }
+        );
+
+        if (!uploadRes.ok) {
+          throw new Error("照片上傳失敗");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.image_url) {
+          throw new Error("後端沒有回傳圖片網址");
+        }
+
+        imageUrl = uploadData.image_url;
+      }
+
+      // 2. 將商品資料和照片網址一起存進資料庫
+      const productRes = await fetch(
         "https://mybeautystudio-backend.onrender.com/api/products",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             user_id: userId,
-
             product_type: "cosmetics",
-
             product_name: form.product_name,
             brand: form.brand,
             category: form.category,
             shade: form.shade,
-
             date_mode: dateMode,
-
             manufacture_date:
               dateMode === "manufacture"
                 ? form.manufacture_date
                 : null,
-
             expire_months:
-              dateMode === "manufacture"
+              dateMode === "manufacture" && form.expire_months
                 ? Number(form.expire_months)
                 : null,
-
             expire_date:
               dateMode === "direct"
                 ? form.expire_date
-                : null
+                : null,
+            image_url: imageUrl
           })
         }
       );
 
-      setShowForm(false);
+      if (!productRes.ok) {
+        const errorText = await productRes.text();
+        console.error("新增商品失敗：", errorText);
+        throw new Error("商品資料儲存失敗");
+      }
 
+      setShowForm(false);
       resetForm();
 
-      loadProducts(userId);
+      await loadProducts(userId);
 
     } catch (err) {
-      console.log(err);
+      console.error("新增化妝品失敗：", err);
+      alert(err.message || "新增失敗，請稍後再試");
     }
   }
+
 
   // =========================
   // 刪除產品
@@ -469,9 +504,18 @@ function Cosmetics() {
                   }}
                 >
 
-                  <div className="cosmetic-photo">
+                  
+                <div className="cosmetic-photo">
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.product_name}
+                    />
+                  ) : (
                     <span>📷</span>
-                  </div>
+                  )}
+                </div>
+
 
                   <div className="cosmetic-info">
 
@@ -553,9 +597,16 @@ function Cosmetics() {
                 ✕
               </button>
 
-
+              
               <div className="detail-photo">
-                <span>📷</span>
+                {selectedProduct.image_url ? (
+                  <img
+                    src={selectedProduct.image_url}
+                    alt={selectedProduct.product_name}
+                  />
+                ) : (
+                  <span>📷</span>
+                )}
               </div>
 
 
