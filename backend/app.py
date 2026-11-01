@@ -260,24 +260,166 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
-    user_text = event.message.text
+    user_text = event.message.text.strip()
 
+    # 取得傳訊息者的 LINE User ID
     line_user_id = getattr(event.source, "user_id", DEFAULT_USER_ID)
 
-    if user_text == "查詢產品":
-        count = products_collection.count_documents({
-            "user_id": line_user_id
-        })
-        reply_text = f"你目前資料庫裡有 {count} 筆美妝產品 💄"
-    else:
-        reply_text = "早安哇😙💅💥"
+    # =========================
+    # 1. 我的庫存
+    # =========================
+    if user_text in ["我的庫存", "查詢產品"]:
 
+        products = list(
+            products_collection.find({
+                "user_id": line_user_id
+            }).sort("created_at", -1)
+        )
+
+        if not products:
+            reply_text = "目前還沒有產品資料喔！"
+        else:
+            lines = []
+
+            for product in products:
+                brand = product.get("brand", "")
+                name = product.get("product_name", "未命名產品")
+                shade = product.get("shade", "")
+
+                product_text = f"{brand} {name}".strip()
+
+                if shade:
+                    product_text += f"｜色號：{shade}"
+
+                lines.append(product_text)
+
+            reply_text = "💄 我的庫存\n\n" + "\n".join(lines)
+
+    # =========================
+    # 2. 查口紅
+    # =========================
+    elif user_text == "查口紅":
+
+        products = list(
+            products_collection.find({
+                "user_id": line_user_id,
+                "category": {
+                    "$regex": "口紅|唇釉|唇膏|唇彩",
+                    "$options": "i"
+                }
+            })
+        )
+
+        if not products:
+            reply_text = "目前沒有找到口紅類產品。"
+        else:
+            lines = []
+
+            for product in products:
+                brand = product.get("brand", "")
+                name = product.get("product_name", "")
+                shade = product.get("shade", "")
+
+                product_text = f"{brand} {name}".strip()
+
+                if shade:
+                    product_text += f"｜色號：{shade}"
+
+                lines.append(product_text)
+
+            reply_text = "💋 我的唇部彩妝\n\n" + "\n".join(lines)
+
+    # =========================
+    # 3. 查腮紅
+    # =========================
+    elif user_text == "查腮紅":
+
+        products = list(
+            products_collection.find({
+                "user_id": line_user_id,
+                "category": {
+                    "$regex": "腮紅",
+                    "$options": "i"
+                }
+            })
+        )
+
+        if not products:
+            reply_text = "目前沒有找到腮紅產品。"
+        else:
+            lines = []
+
+            for product in products:
+                brand = product.get("brand", "")
+                name = product.get("product_name", "")
+                shade = product.get("shade", "")
+
+                product_text = f"{brand} {name}".strip()
+
+                if shade:
+                    product_text += f"｜色號：{shade}"
+
+                lines.append(product_text)
+
+            reply_text = "🌸 我的腮紅\n\n" + "\n".join(lines)
+
+    # =========================
+    # 4. 即將過期
+    # =========================
+    elif user_text in ["即將過期", "即將過期的產品"]:
+        today = datetime.now()
+        deadline = today + relativedelta(days=30)
+
+        products = list(
+            products_collection.find({
+                "user_id": line_user_id,
+                "expire_date": {
+                    "$gte": today.strftime("%Y-%m-%d"),
+                    "$lte": deadline.strftime("%Y-%m-%d")
+                }
+            }).sort("expire_date", 1)
+        )
+
+        if not products:
+            reply_text = "✨ 目前 30 天內沒有即將過期的產品。"
+        else:
+            lines = []
+
+            for product in products:
+                brand = product.get("brand", "")
+                name = product.get("product_name", "")
+                expire_date = product.get("expire_date", "")
+
+                lines.append(
+                    f"{brand} {name}｜期限：{expire_date}".strip()
+                )
+
+            reply_text = "⚠️ 30 天內即將過期\n\n" + "\n".join(lines)
+
+    # =========================
+    # 其他訊息
+    # =========================
+    else:
+        reply_text = (
+            "可以直接輸入以下指令：\n\n"
+            "💄 我的庫存\n"
+            "💋 查口紅\n"
+            "🌸 查腮紅\n"
+            "⚠️ 即將過期"
+        )
+
+    # =========================
+    # 回覆 LINE
+    # =========================
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
+
         line_bot_api.reply_message_with_http_info(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text=reply_text)]
+                messages=[
+                    TextMessage(text=reply_text)
+                ]
             )
         )
 
@@ -465,6 +607,7 @@ def add_product_api():
         "brand": brand,
         "category": category,
         "shade": shade,
+        "color_hex": color_hex,
         "image_url": image_url,
         "date_mode": expire_fields["date_mode"],
         "manufacture_date": expire_fields["manufacture_date"],
