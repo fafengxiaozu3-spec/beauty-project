@@ -926,7 +926,23 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                     alert("掃描辨識功能即將推出！");
                   }}
                 >
-                  <span className="scan-icon">▣</span>
+                  <svg
+                    className="scan-icon"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 8V5a1 1 0 0 1 1-1h3" />
+                    <path d="M16 4h3a1 1 0 0 1 1 1v3" />
+                    <path d="M20 16v3a1 1 0 0 1-1 1h-3" />
+                    <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
+                    <path d="M4 12h16" />
+                  </svg>
                   掃描辨識產品資訊
                 </button>
 
