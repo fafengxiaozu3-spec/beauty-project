@@ -12,6 +12,8 @@ function Cosmetics() {
 
   const [showForm, setShowForm] = useState(false);
 
+  const [detectedColor, setDetectedColor] = useState("");
+
   // 商品照片
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -54,6 +56,7 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   // =========================
   function resetForm() {
     setEditMode(false);
+    setDetectedColor("");
 
     setForm({
       product_name: "",
@@ -943,9 +946,10 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                     <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
                     <path d="M4 12h16" />
                   </svg>
+                  
                   掃描辨識產品資訊
                 </button>
-
+                
                 <p className="scan-hint">
                   拍攝產品包裝，自動填入下方資料
                 </p>
@@ -966,14 +970,70 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                 onChange={handleChange}
               />
 
+              
+              {/* =========================
+                  色號與辨識顏色
+              ========================= */}
 
-              <input
-                name="shade"
-                value={form.shade}
-                placeholder="色號"
-                onChange={handleChange}
-              />
+              <div className="shade-input-wrapper">
+                <input
+                  name="shade"
+                  value={form.shade}
+                  placeholder="色號"
+                  onChange={handleChange}
+                />
 
+                {detectedColor && (
+                  <span
+                    className="shade-color-circle"
+                    style={{ backgroundColor: detectedColor }}
+                    title={`辨識顏色：${detectedColor}`}
+                  />
+                )}
+              </div>
+
+              {/* =========================
+                  拍攝辨識產品顏色
+              ========================= */}
+
+              <div className="color-scan-section">
+                <button
+                  type="button"
+                  className="color-scan-btn"
+                  onClick={() => {
+                    setDetectedColor("#C87585");
+                  }}
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M4 8V5a1 1 0 0 1 1-1h3" />
+                    <path d="M16 4h3a1 1 0 0 1 1 1v3" />
+                    <path d="M20 16v3a1 1 0 0 1-1 1h-3" />
+                    <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+
+                  拍攝辨識產品顏色
+                </button>
+
+                {detectedColor && (
+                  <p className="detected-color-text">
+                    已辨識顏色：{detectedColor}
+                  </p>
+                )}
+              </div>
+
+              {/* =========================
+                  分類
+              ========================= */}
 
               <input
                 name="category"
@@ -981,6 +1041,7 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                 placeholder="分類"
                 onChange={handleChange}
               />
+
 
 
               <select
