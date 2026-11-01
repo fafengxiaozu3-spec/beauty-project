@@ -947,7 +947,7 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                     <path d="M4 12h16" />
                   </svg>
                   
-                  掃描辨識產品資訊
+                  掃描自動輸入產品資訊
                 </button>
                 
                 <p className="scan-hint">
@@ -1021,7 +1021,7 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                     <circle cx="12" cy="12" r="3" />
                   </svg>
 
-                  拍攝辨識產品顏色
+                  拍照辨識顏色
                 </button>
 
                 {detectedColor && (
