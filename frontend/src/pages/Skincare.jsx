@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import Cropper from "react-easy-crop";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { initLiff } from "../services/liff";
@@ -10,6 +12,17 @@ function Skincare() {
   const [loadingProducts, setLoadingProducts] = useState(true);
 
   const [showForm, setShowForm] = useState(false);
+  
+  // 商品照片
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+
+  // 照片剪裁
+  const [showCrop, setShowCrop] = useState(false);
+  const [cropImage, setCropImage] = useState("");
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
@@ -41,6 +54,7 @@ function Skincare() {
   // 重設表單
   // =========================
 
+  
   function resetForm() {
     setEditMode(false);
 
@@ -52,6 +66,19 @@ function Skincare() {
       expire_months: "",
       expire_date: ""
     });
+
+    if (imagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
+    setSelectedImage(null);
+    setImagePreview("");
+
+    setShowCrop(false);
+    setCropImage("");
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
 
     setDateMode("manufacture");
   }
@@ -121,32 +148,183 @@ function Skincare() {
     });
   }
 
+  
+  // =========================
+  // 選擇商品照片
+  // =========================
+  function handleImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("請選擇圖片檔案");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("圖片大小不能超過 10 MB");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setCropImage(reader.result);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
+      setShowCrop(true);
+    };
+
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+  }
+
+  // =========================
+  // 產生剪裁後的正方形照片
+  // =========================
+  async function getCroppedImage(imageSrc, pixelCrop) {
+    const image = new Image();
+    image.src = imageSrc;
+
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      throw new Error("無法建立圖片剪裁畫布");
+    }
+
+    canvas.width = 600;
+    canvas.height = 600;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      600,
+      600
+    );
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", 0.9);
+    });
+
+    if (!blob) {
+      throw new Error("照片剪裁失敗");
+    }
+
+    return new File(
+      [blob],
+      "product-photo.jpg",
+      { type: "image/jpeg" }
+    );
+  }
+
+  // =========================
+  // 確認剪裁
+  // =========================
+  async function confirmCrop() {
+    if (!cropImage || !croppedAreaPixels) return;
+
+    try {
+      const croppedFile = await getCroppedImage(
+        cropImage,
+        croppedAreaPixels
+      );
+
+      setSelectedImage(croppedFile);
+
+      const previewUrl = URL.createObjectURL(croppedFile);
+
+      if (imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
+
+      setImagePreview(previewUrl);
+
+      setShowCrop(false);
+      setCropImage("");
+      setCroppedAreaPixels(null);
+
+    } catch (err) {
+      console.error("剪裁照片失敗：", err);
+      alert("照片剪裁失敗，請重新選擇圖片");
+    }
+  }
+
+
   // =========================
   // 新增保養品
   // =========================
 
+  
+  // =========================
+  // 新增保養品
+  // =========================
   async function createProduct() {
     try {
       const userId = localStorage.getItem("lineUserId");
 
-      await fetch(
+      if (!userId) {
+        alert("無法取得使用者資料，請重新開啟頁面");
+        return;
+      }
+
+      let imageUrl = "";
+
+      // 1. 上傳剪裁後的照片
+      if (selectedImage) {
+        const imageData = new FormData();
+        imageData.append("image", selectedImage);
+
+        const uploadRes = await fetch(
+          "https://mybeautystudio-backend.onrender.com/api/upload-image",
+          {
+            method: "POST",
+            body: imageData
+          }
+        );
+
+        if (!uploadRes.ok) {
+          throw new Error("照片上傳失敗");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.image_url) {
+          throw new Error("後端沒有回傳圖片網址");
+        }
+
+        imageUrl = uploadData.image_url;
+      }
+
+      // 2. 儲存保養品資料與照片網址
+      const productRes = await fetch(
         "https://mybeautystudio-backend.onrender.com/api/products",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             user_id: userId,
-
             product_type: "skincare",
-
             product_name: form.product_name,
             brand: form.brand,
             category: form.category,
-
             date_mode: dateMode,
 
             manufacture_date:
@@ -155,27 +333,37 @@ function Skincare() {
                 : null,
 
             expire_months:
-              dateMode === "manufacture"
+              dateMode === "manufacture" && form.expire_months
                 ? Number(form.expire_months)
                 : null,
 
             expire_date:
               dateMode === "direct"
                 ? form.expire_date
-                : null
+                : null,
+
+            image_url: imageUrl
           })
         }
       );
 
-      setShowForm(false);
+      if (!productRes.ok) {
+        const errorText = await productRes.text();
+        console.error("新增保養品失敗：", errorText);
+        throw new Error("保養品資料儲存失敗");
+      }
 
+      setShowForm(false);
       resetForm();
 
-      loadProducts(userId);
+      await loadProducts(userId);
+
     } catch (err) {
-      console.log(err);
+      console.error("新增保養品失敗：", err);
+      alert(err.message || "新增失敗，請稍後再試");
     }
   }
+
 
   // =========================
   // 刪除產品
@@ -433,7 +621,14 @@ function Skincare() {
                   }}
                 >
                   <div className="cosmetic-photo">
-                    🧴
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.product_name}
+                      />
+                    ) : (
+                      <span>🧴</span>
+                    )}
                   </div>
 
                   <div className="cosmetic-info">
@@ -511,7 +706,14 @@ function Skincare() {
 
 
               <div className="detail-photo">
-                <span>📷</span>
+                {selectedProduct.image_url ? (
+                  <img
+                    src={selectedProduct.image_url}
+                    alt={selectedProduct.product_name}
+                  />
+                ) : (
+                  <span>📷</span>
+                )}
               </div>
 
 
@@ -663,21 +865,55 @@ function Skincare() {
                   : "新增保養品"}
               </h2>
 
+              {/* 照片上傳 */}
 
-              {/* 照片 */}
+              <label
+                className="photo-upload"
+                htmlFor="skincare-image"
+              >
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="保養品照片預覽"
+                    className="photo-upload-preview"
+                  />
+                ) : (
+                  <>
+                    <div className="photo-upload-icon">
+                      📷
+                    </div>
 
-              <div className="photo-upload">
+                    <span>新增產品照片</span>
+                    <small>點擊選擇圖片</small>
+                  </>
+                )}
+              </label>
 
-                <div className="photo-upload-icon">
-                  📷
-                </div>
+              <input
+                id="skincare-image"
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleImageChange}
+              />
 
-                <span>
-                  新增產品照片
-                </span>
+              {imagePreview && (
+                <button
+                  type="button"
+                  className="photo-remove-btn"
+                  onClick={() => {
+                    setSelectedImage(null);
 
-              </div>
+                    if (imagePreview.startsWith("blob:")) {
+                      URL.revokeObjectURL(imagePreview);
+                    }
 
+                    setImagePreview("");
+                  }}
+                >
+                  移除照片
+                </button>
+              )}
 
               <input
                 name="product_name"
@@ -803,6 +1039,76 @@ function Skincare() {
           </>
 
         )}
+        
+        {/* =========================
+            照片剪裁視窗
+        ========================= */}
+
+        {showCrop && cropImage && (
+          <div className="crop-overlay">
+            <div className="crop-modal">
+
+              <h2>剪裁產品照片</h2>
+
+              <div className="crop-container">
+                <Cropper
+                  image={cropImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="rect"
+                  showGrid={true}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, croppedPixels) => {
+                    setCroppedAreaPixels(croppedPixels);
+                  }}
+                />
+              </div>
+
+              <div className="crop-zoom">
+                <span>－</span>
+
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.01}
+                  value={zoom}
+                  onChange={(e) =>
+                    setZoom(Number(e.target.value))
+                  }
+                />
+
+                <span>＋</span>
+              </div>
+
+              <div className="crop-actions">
+                <button
+                  type="button"
+                  className="crop-cancel"
+                  onClick={() => {
+                    setShowCrop(false);
+                    setCropImage("");
+                    setCroppedAreaPixels(null);
+                  }}
+                >
+                  取消
+                </button>
+
+                <button
+                  type="button"
+                  className="crop-confirm"
+                  onClick={confirmCrop}
+                >
+                  確認剪裁
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
 
       </div>
 
