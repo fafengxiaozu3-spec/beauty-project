@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { useState, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { initLiff } from "../services/liff";
-
 function Skincare() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -265,12 +263,6 @@ function Skincare() {
     }
   }
 
-
-  // =========================
-  // 新增保養品
-  // =========================
-
-  
   // =========================
   // 新增保養品
   // =========================
