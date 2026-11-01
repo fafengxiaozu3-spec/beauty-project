@@ -262,6 +262,8 @@ def callback():
 def handle_message(event):
     user_text = event.message.text.strip()
 
+    app.logger.info(f"LINE 收到訊息：{user_text}")
+
     # 取得傳訊息者的 LINE User ID
     line_user_id = getattr(event.source, "user_id", DEFAULT_USER_ID)
 
