@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Cropper from "react-easy-crop";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { initLiff } from "../services/liff";
@@ -14,6 +15,12 @@ function Cosmetics() {
   // 商品照片
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  // 照片剪裁
+const [showCrop, setShowCrop] = useState(false);
+const [cropImage, setCropImage] = useState("");
+const [crop, setCrop] = useState({ x: 0, y: 0 });
+const [zoom, setZoom] = useState(1);
+const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
@@ -122,29 +129,131 @@ function Cosmetics() {
   }
 
   // 選擇商品照片
+  
+  // =========================
+  // 選擇商品照片
+  // =========================
   function handleImageChange(e) {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    // 只允許圖片格式
     if (!file.type.startsWith("image/")) {
       alert("請選擇圖片檔案");
       e.target.value = "";
       return;
     }
 
-    // 限制圖片大小為 10 MB
     if (file.size > 10 * 1024 * 1024) {
       alert("圖片大小不能超過 10 MB");
       e.target.value = "";
       return;
     }
 
-    setSelectedImage(file);
+    const reader = new FileReader();
 
-    // 顯示圖片預覽
-    setImagePreview(URL.createObjectURL(file));
+    reader.onload = () => {
+      setCropImage(reader.result);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
+      setShowCrop(true);
+    };
+
+    reader.readAsDataURL(file);
+
+    // 允許再次選擇同一張圖片
+    e.target.value = "";
+  }
+
+  // =========================
+  // 產生正方形剪裁照片
+  // =========================
+  async function getCroppedImage(imageSrc, pixelCrop) {
+    const image = new Image();
+
+    image.src = imageSrc;
+
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      throw new Error("無法建立圖片剪裁畫布");
+    }
+
+    const size = 800;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      size,
+      size
+    );
+
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", 0.9);
+    });
+
+    if (!blob) {
+      throw new Error("圖片剪裁失敗");
+    }
+
+    return new File(
+      [blob],
+      "product-photo.jpg",
+      { type: "image/jpeg" }
+    );
+  }
+
+  // =========================
+  // 確認剪裁
+  // =========================
+  async function confirmCrop() {
+    if (!cropImage || !croppedAreaPixels) return;
+
+    try {
+      const croppedFile = await getCroppedImage(
+        cropImage,
+        croppedAreaPixels
+      );
+
+      const preview = URL.createObjectURL(croppedFile);
+
+      setSelectedImage(croppedFile);
+      setImagePreview(preview);
+
+      setShowCrop(false);
+      setCropImage("");
+      setCroppedAreaPixels(null);
+
+    } catch (err) {
+      console.error("剪裁照片失敗：", err);
+      alert("照片剪裁失敗，請重新選擇圖片");
+    }
+  }
+
+  // =========================
+  // 取消剪裁
+  // =========================
+  function cancelCrop() {
+    setShowCrop(false);
+    setCropImage("");
+    setCroppedAreaPixels(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   }
 
   
@@ -929,6 +1038,76 @@ function Cosmetics() {
           </>
 
         )}
+        
+        {/* =========================
+            照片剪裁視窗
+        ========================= */}
+
+        {showCrop && cropImage && (
+          <div className="crop-overlay">
+
+            <div className="crop-modal">
+
+              <h2>剪裁產品照片</h2>
+
+              <div className="crop-container">
+                <Cropper
+                  image={cropImage}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="rect"
+                  showGrid={true}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, croppedPixels) => {
+                    setCroppedAreaPixels(croppedPixels);
+                  }}
+                />
+              </div>
+
+              <div className="crop-zoom">
+                <span>－</span>
+
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.01}
+                  value={zoom}
+                  onChange={(e) =>
+                    setZoom(Number(e.target.value))
+                  }
+                />
+
+                <span>＋</span>
+              </div>
+
+              <div className="crop-actions">
+
+                <button
+                  type="button"
+                  className="crop-cancel"
+                  onClick={cancelCrop}
+                >
+                  取消
+                </button>
+
+                <button
+                  type="button"
+                  className="crop-confirm"
+                  onClick={confirmCrop}
+                >
+                  確認剪裁
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
 
       </div>
 

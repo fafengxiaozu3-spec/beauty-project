@@ -1335,8 +1335,8 @@ body {
 
 .photo-remove-btn {
   display: block;
-  align-self: flex-start;
-  margin: 0 0 8px;
+  align-self: center;
+  margin: 0 auto 8px;
   padding: 8px 14px;
 
   border: 1px solid #f0dce3;
@@ -2370,3 +2370,122 @@ body {
     margin-top: 18px;
   }
 }
+
+
+/* =========================
+   照片剪裁視窗
+========================= */
+
+.crop-overlay {
+  overflow-y: auto;
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.crop-modal {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+
+  background: #fff;
+  border-radius: 20px;
+
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.crop-modal h2 {
+  margin: 0 0 16px;
+  text-align: center;
+  font-size: 19px;
+  color: #444;
+}
+
+.crop-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+
+  overflow: hidden;
+  background: #222;
+  border-radius: 12px;
+}
+
+.crop-zoom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+
+.crop-zoom input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 6px;
+  padding: 0;
+  cursor: pointer;
+  accent-color: #ff8fab;
+}
+
+
+.crop-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.crop-actions button {
+  flex: 1;
+  height: 44px;
+
+  border: none;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.crop-cancel {
+  background: #f5f5f5;
+  color: #777;
+}
+
+.crop-confirm {
+  background: #ff8fab;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .crop-modal {
+    padding: 16px;
+  }
+
+  .crop-container {
+    height: 260px;
+  }
+}
+
+/* =========================
+   新增 / 編輯產品背景遮罩
+========================= */
+
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1150;
+  background: rgba(0, 0, 0, 0.28);
+}
+
