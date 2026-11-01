@@ -313,7 +313,7 @@ def handle_message(event):
     # =========================
     elif user_text.startswith("查"):
 
-        keyword = user_text[2:].strip()
+        keyword = user_text[1:].strip()
 
         if not keyword:
             reply_text = "請在「查」後面輸入關鍵字，例如：查 BBIA"
