@@ -1281,6 +1281,7 @@ body {
   overflow: hidden;
 
   display: flex;
+  align-self: center;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -2353,5 +2354,40 @@ body {
   .shopping-detail-actions {
     margin-top: 18px;
   }
+}
 
+/* =========================
+   新增產品視窗：可上下滑動
+========================= */
+
+/* 彈出視窗本身 */
+.popup {
+  max-height: 85vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 表單內容不要超出視窗 */
+.popup form {
+  min-width: 0;
+}
+
+/* 欄位之間保留適當間距 */
+.popup input,
+.popup select,
+.popup textarea {
+  box-sizing: border-box;
+}
+
+/* 手機畫面：讓視窗留出上下空間 */
+@media (max-width: 768px) {
+  .popup {
+    width: calc(100% - 32px);
+    max-width: 480px;
+    max-height: 85dvh;
+    overflow-y: auto;
+    padding: 20px;
+  }
 }
