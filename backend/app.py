@@ -1,5 +1,6 @@
 import os
 import re
+from collections import defaultdict
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -310,7 +311,7 @@ def handle_message(event):
     # 2. 通用產品搜尋
     # 格式：查 + 關鍵字
     # =========================
-    elif user_text.startswith("查 "):
+    elif user_text.startswith("查"):
 
         keyword = user_text[2:].strip()
 
@@ -353,28 +354,44 @@ def handle_message(event):
 
             if not products:
                 reply_text = f"🔍 找不到與「{keyword}」相關的庫存。"
+
             else:
-                lines = []
+                grouped_products = defaultdict(list)
 
+                # 先依品牌分組
                 for product in products[:10]:
-                    brand = product.get("brand", "")
-                    name = product.get("product_name", "未命名產品")
-                    category = product.get("category", "")
-                    shade = product.get("shade", "")
+                    brand = product.get("brand", "").strip() or "未分類品牌"
+                    grouped_products[brand].append(product)
 
-                    product_text = f"{brand} {name}".strip()
+                sections = []
+                index = 1
 
-                    if category:
-                        product_text += f"｜{category}"
+                # 每個品牌各自整理
+                for brand, brand_products in grouped_products.items():
+                    brand_lines = [f"【{brand}】"]
 
-                    if shade:
-                        product_text += f"｜色號：{shade}"
+                    for product in brand_products:
+                        name = product.get("product_name", "未命名產品")
+                        category = product.get("category", "")
+                        shade = product.get("shade", "")
 
-                    lines.append(product_text)
+                        product_text = f"{index}. {name}"
+
+                        if category:
+                            product_text += f"\n   類別：{category}"
+
+                        if shade:
+                            product_text += f"\n   色號：{shade}"
+
+                        brand_lines.append(product_text)
+                        index += 1
+
+                    sections.append("\n\n".join(brand_lines))
 
                 reply_text = (
-                    f"🔍「{keyword}」搜尋結果\n\n"
-                    + "\n".join(lines)
+                    f"🔍「{keyword}」搜尋結果\n"
+                    f"共找到 {len(products)} 筆\n\n"
+                    + "\n\n\n".join(sections)
                 )
 
                 if len(products) > 10:
@@ -463,15 +480,11 @@ def handle_message(event):
     # =========================
     else:
         reply_text = (
-            "💄 GlowKeeper 快速查詢\n\n"
+            "🥸💅GlowKeeper 快速查詢\n\n"
             "可以直接輸入：\n"
             "「我的庫存」\n"
             "「查 + 品牌／品名／分類／色號」\n\n"
-            "例如：\n"
-            "查 BBIA\n"
-            "查 腮紅\n"
-            "查 06\n\n"
-            "也可以使用下方選單查詢\n"
+            "也可以利用下方選單查詢\n"
             "即將過期產品與購物清單。"
         )
 
