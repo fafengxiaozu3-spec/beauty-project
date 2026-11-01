@@ -935,7 +935,7 @@ function Skincare() {
                     <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
                     <path d="M4 12h16" />
                   </svg>
-                  掃描辨識產品資訊
+                  掃描自動輸入產品資訊
                 </button>
 
                 <p className="scan-hint">
