@@ -840,7 +840,15 @@ function Skincare() {
               onClick={(e) => e.stopPropagation()}
             >
 
+            <div className="form-header">
+              <h2>
+                {editMode
+                  ? "編輯保養品"
+                  : "新增保養品"}
+              </h2>
+
               <button
+                type="button"
                 className="form-close"
                 onClick={() => {
                   setShowForm(false);
@@ -849,13 +857,7 @@ function Skincare() {
               >
                 ✕
               </button>
-
-
-              <h2>
-                {editMode
-                  ? "編輯保養品"
-                  : "新增保養品"}
-              </h2>
+            </div>
 
               {/* 照片上傳 */}
 
@@ -906,6 +908,24 @@ function Skincare() {
                   移除照片
                 </button>
               )}
+              
+              {/* 掃描辨識產品資訊 */}
+              <div className="scan-section">
+                <button
+                  type="button"
+                  className="scan-product-btn"
+                  onClick={() => {
+                    alert("掃描辨識功能即將推出！");
+                  }}
+                >
+                  <span className="scan-icon">▣</span>
+                  掃描辨識產品資訊
+                </button>
+
+                <p className="scan-hint">
+                  拍攝產品包裝，自動填入下方資料
+                </p>
+              </div>
 
               <input
                 name="product_name"

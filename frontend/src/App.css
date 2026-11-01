@@ -1256,23 +1256,56 @@ body {
 
 
 /* =========================
-   表單關閉
+   新增 / 編輯表單標題列
 ========================= */
+
+.form-header {
+  position: relative;
+  width: 100%;
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.form-header h2 {
+  margin: 0;
+  padding: 0 40px;
+
+  color: #444;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
 .form-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+
   width: 34px;
   height: 34px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
   border: none;
   border-radius: 50%;
+
   background: #fff7fa;
   color: #e79aaa;
   font-size: 17px;
+
   cursor: pointer;
 }
+
 
 
 /* =========================
@@ -2489,3 +2522,59 @@ body {
   background: rgba(0, 0, 0, 0.28);
 }
 
+/* =========================
+   掃描辨識產品資訊
+========================= */
+
+.scan-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  margin: 4px 0 10px;
+}
+
+.scan-product-btn {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 1px solid #f3cbd5;
+  border-radius: 12px;
+
+  background: #fff0f4;
+  color: #b8758b;
+
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.scan-product-btn:hover {
+  background: #ffe5ed;
+}
+
+.scan-product-btn:active {
+  transform: scale(0.98);
+}
+
+.scan-icon {
+  font-size: 21px;
+  line-height: 1;
+}
+
+.scan-hint {
+  margin: 0;
+  color: #a18e95;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.5;
+}
