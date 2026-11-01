@@ -283,29 +283,48 @@ def handle_message(event):
 
         if not products:
             reply_text = "目前還沒有產品資料喔！"
+
         else:
-            lines = []
+            grouped_products = defaultdict(list)
 
+            # 依品牌分組
             for product in products[:10]:
-                brand = product.get("brand", "")
-                name = product.get("product_name", "未命名產品")
-                category = product.get("category", "")
-                shade = product.get("shade", "")
+                brand = product.get("brand", "").strip() or "未分類品牌"
+                grouped_products[brand].append(product)
 
-                product_text = f"{brand} {name}".strip()
+            sections = []
+            index = 1
 
-                if category:
-                    product_text += f"｜{category}"
+            for brand, brand_products in grouped_products.items():
+                brand_lines = [f"【{brand}】"]
 
-                if shade:
-                    product_text += f"｜色號：{shade}"
+                for product in brand_products:
+                    name = product.get("product_name", "未命名產品")
+                    category = product.get("category", "")
+                    shade = product.get("shade", "")
 
-                lines.append(product_text)
+                    product_text = f"{index}. {name}"
 
-            reply_text = "💄 我的庫存\n\n" + "\n".join(lines)
+                    if category:
+                        product_text += f"\n   類別：{category}"
+
+                    if shade:
+                        product_text += f"\n   色號：{shade}"
+
+                    brand_lines.append(product_text)
+                    index += 1
+
+                sections.append("\n\n".join(brand_lines))
+
+            reply_text = (
+                f"💄 我的庫存\n"
+                f"共 {len(products)} 筆\n\n"
+                + "\n\n\n".join(sections)
+            )
 
             if len(products) > 10:
                 reply_text += f"\n\n另有 {len(products) - 10} 筆產品，可至完整系統查看。"
+                
 
     # =========================
     # 2. 通用產品搜尋
@@ -316,7 +335,10 @@ def handle_message(event):
         keyword = user_text[1:].strip()
 
         if not keyword:
-            reply_text = "請在「查」後面輸入關鍵字，例如：查 BBIA"
+            reply_text = (
+                "請在「查」後面輸入欲搜尋之關鍵字\n"
+                "例如：查唇彩"
+            )
         else:
             safe_keyword = re.escape(keyword)
 
