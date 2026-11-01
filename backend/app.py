@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -262,10 +263,11 @@ def callback():
 def handle_message(event):
     user_text = event.message.text.strip()
 
-    app.logger.info(f"LINE 收到訊息：{user_text}")
-
     # 取得傳訊息者的 LINE User ID
     line_user_id = getattr(event.source, "user_id", DEFAULT_USER_ID)
+
+    app.logger.info(f"LINE 收到訊息：{user_text}")
+    app.logger.info(f"LINE User ID：{line_user_id}")
 
     # =========================
     # 1. 我的庫存
@@ -283,12 +285,16 @@ def handle_message(event):
         else:
             lines = []
 
-            for product in products:
+            for product in products[:10]:
                 brand = product.get("brand", "")
                 name = product.get("product_name", "未命名產品")
+                category = product.get("category", "")
                 shade = product.get("shade", "")
 
                 product_text = f"{brand} {name}".strip()
+
+                if category:
+                    product_text += f"｜{category}"
 
                 if shade:
                     product_text += f"｜色號：{shade}"
@@ -297,78 +303,88 @@ def handle_message(event):
 
             reply_text = "💄 我的庫存\n\n" + "\n".join(lines)
 
-    # =========================
-    # 2. 查口紅
-    # =========================
-    elif user_text == "查口紅":
+            if len(products) > 10:
+                reply_text += f"\n\n另有 {len(products) - 10} 筆產品，可至完整系統查看。"
 
-        products = list(
-            products_collection.find({
-                "user_id": line_user_id,
-                "category": {
-                    "$regex": "口紅|唇釉|唇膏|唇彩",
-                    "$options": "i"
-                }
-            })
-        )
+    # =========================
+    # 2. 通用產品搜尋
+    # 格式：查 + 關鍵字
+    # =========================
+    elif user_text.startswith("查 "):
 
-        if not products:
-            reply_text = "目前沒有找到口紅類產品。"
+        keyword = user_text[2:].strip()
+
+        if not keyword:
+            reply_text = "請在「查」後面輸入關鍵字，例如：查 BBIA"
         else:
-            lines = []
+            safe_keyword = re.escape(keyword)
 
-            for product in products:
-                brand = product.get("brand", "")
-                name = product.get("product_name", "")
-                shade = product.get("shade", "")
+            products = list(
+                products_collection.find({
+                    "user_id": line_user_id,
+                    "$or": [
+                        {
+                            "brand": {
+                                "$regex": safe_keyword,
+                                "$options": "i"
+                            }
+                        },
+                        {
+                            "product_name": {
+                                "$regex": safe_keyword,
+                                "$options": "i"
+                            }
+                        },
+                        {
+                            "category": {
+                                "$regex": safe_keyword,
+                                "$options": "i"
+                            }
+                        },
+                        {
+                            "shade": {
+                                "$regex": safe_keyword,
+                                "$options": "i"
+                            }
+                        }
+                    ]
+                }).sort("created_at", -1)
+            )
 
-                product_text = f"{brand} {name}".strip()
+            if not products:
+                reply_text = f"🔍 找不到與「{keyword}」相關的庫存。"
+            else:
+                lines = []
 
-                if shade:
-                    product_text += f"｜色號：{shade}"
+                for product in products[:10]:
+                    brand = product.get("brand", "")
+                    name = product.get("product_name", "未命名產品")
+                    category = product.get("category", "")
+                    shade = product.get("shade", "")
 
-                lines.append(product_text)
+                    product_text = f"{brand} {name}".strip()
 
-            reply_text = "💋 我的唇部彩妝\n\n" + "\n".join(lines)
+                    if category:
+                        product_text += f"｜{category}"
+
+                    if shade:
+                        product_text += f"｜色號：{shade}"
+
+                    lines.append(product_text)
+
+                reply_text = (
+                    f"🔍「{keyword}」搜尋結果\n\n"
+                    + "\n".join(lines)
+                )
+
+                if len(products) > 10:
+                    reply_text += f"\n\n另有 {len(products) - 10} 筆結果。"
 
     # =========================
-    # 3. 查腮紅
-    # =========================
-    elif user_text == "查腮紅":
-
-        products = list(
-            products_collection.find({
-                "user_id": line_user_id,
-                "category": {
-                    "$regex": "腮紅",
-                    "$options": "i"
-                }
-            })
-        )
-
-        if not products:
-            reply_text = "目前沒有找到腮紅產品。"
-        else:
-            lines = []
-
-            for product in products:
-                brand = product.get("brand", "")
-                name = product.get("product_name", "")
-                shade = product.get("shade", "")
-
-                product_text = f"{brand} {name}".strip()
-
-                if shade:
-                    product_text += f"｜色號：{shade}"
-
-                lines.append(product_text)
-
-            reply_text = "🌸 我的腮紅\n\n" + "\n".join(lines)
-
-    # =========================
-    # 4. 即將過期
+    # 3. 即將過期
     # =========================
     elif user_text in ["即將過期", "即將過期的產品"]:
+
         today = datetime.now()
         deadline = today + relativedelta(days=30)
 
@@ -396,18 +412,67 @@ def handle_message(event):
                     f"{brand} {name}｜期限：{expire_date}".strip()
                 )
 
-            reply_text = "⚠️ 30 天內即將過期\n\n" + "\n".join(lines)
+            reply_text = (
+                "⚠️ 30 天內即將過期\n\n"
+                + "\n".join(lines)
+            )
 
     # =========================
-    # 其他訊息
+    # 4. 我的購物清單
+    # =========================
+    elif user_text in ["購物清單", "我的購物清單"]:
+
+        items = list(
+            shopping_collection.find({
+                "user_id": line_user_id,
+                "is_bought": False
+            }).sort("created_at", -1)
+        )
+
+        if not items:
+            reply_text = "🛒 目前購物清單是空的。"
+        else:
+            lines = []
+
+            for item in items[:10]:
+                brand = item.get("brand", "")
+                name = item.get("item_name", "未命名商品")
+                category = item.get("category", "")
+                note = item.get("note", "")
+
+                item_text = f"{brand} {name}".strip()
+
+                if category:
+                    item_text += f"｜{category}"
+
+                if note:
+                    item_text += f"\n備註：{note}"
+
+                lines.append(item_text)
+
+            reply_text = (
+                "🛒 我的購物清單\n\n"
+                + "\n".join(lines)
+            )
+
+            if len(items) > 10:
+                reply_text += f"\n\n另有 {len(items) - 10} 筆，可至完整系統查看。"
+
+    # =========================
+    # 5. 其他訊息：使用說明
     # =========================
     else:
         reply_text = (
-            "可以直接輸入以下指令：\n\n"
-            "💄 我的庫存\n"
-            "💋 查口紅\n"
-            "🌸 查腮紅\n"
-            "⚠️ 即將過期"
+            "💄 GlowKeeper 快速查詢\n\n"
+            "可以直接輸入：\n"
+            "「我的庫存」\n"
+            "「查 + 品牌／品名／分類／色號」\n\n"
+            "例如：\n"
+            "查 BBIA\n"
+            "查 腮紅\n"
+            "查 06\n\n"
+            "也可以使用下方選單查詢\n"
+            "即將過期產品與購物清單。"
         )
 
     # =========================
