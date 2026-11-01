@@ -1,0 +1,34 @@
+<table border="1">
+    <thead>
+        <tr>
+            <th>產品名稱</th>
+            <th>品牌</th>
+            <th>類別</th>
+            <th>色號</th>
+            <th>日期模式</th>
+            <th>製造日期</th>
+            <th>保存期限（月）</th>
+            <th>有效日期</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ product.brand }}</td>
+            <td>{{ product.category }}</td>
+            <td>{{ product.shade }}</td>
+            <td>{{ product.date_mode }}</td>
+            <td>{{ product.manufacture_date }}</td>
+            <td>{{ product.expire_months }}</td>
+            <td>{{ product.expire_date }}</td>
+            <td>
+                <form action="/products/delete/{{ product.id }}" method="POST">
+                    <button type="submit">刪除</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
