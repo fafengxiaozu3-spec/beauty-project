@@ -14,6 +14,7 @@ function Skincare() {
   // 商品照片
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [removeImage, setRemoveImage] = useState(false);
 
   // 照片剪裁
   const [showCrop, setShowCrop] = useState(false);
@@ -52,7 +53,6 @@ function Skincare() {
   // 重設表單
   // =========================
 
-  
   function resetForm() {
     setEditMode(false);
 
@@ -71,6 +71,7 @@ function Skincare() {
 
     setSelectedImage(null);
     setImagePreview("");
+    setRemoveImage(false);
 
     setShowCrop(false);
     setCropImage("");
@@ -389,23 +390,56 @@ function Skincare() {
     }
   }
 
+  
   // =========================
   // 更新產品
   // =========================
-
   async function updateProduct() {
     if (!selectedProduct) return;
 
     try {
-      await fetch(
+      // 預設保留原本照片
+      let imageUrl = selectedProduct.image_url || "";
+
+      // 如果使用者移除照片
+      if (removeImage) {
+        imageUrl = "";
+      }
+
+      // 如果使用者選擇新照片，先上傳
+      if (selectedImage) {
+        const imageData = new FormData();
+        imageData.append("image", selectedImage);
+
+        const uploadRes = await fetch(
+          "https://mybeautystudio-backend.onrender.com/api/upload-image",
+          {
+            method: "POST",
+            body: imageData
+          }
+        );
+
+        if (!uploadRes.ok) {
+          throw new Error("照片上傳失敗");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.image_url) {
+          throw new Error("後端沒有回傳圖片網址");
+        }
+
+        imageUrl = uploadData.image_url;
+      }
+
+      // 更新保養品資料
+      const productRes = await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
         {
           method: "PATCH",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             product_type: "skincare",
 
@@ -421,17 +455,23 @@ function Skincare() {
                 : null,
 
             expire_months:
-              dateMode === "manufacture"
+              dateMode === "manufacture" && form.expire_months
                 ? Number(form.expire_months)
                 : null,
 
             expire_date:
               dateMode === "direct"
                 ? form.expire_date
-                : null
+                : null,
+
+            image_url: imageUrl
           })
         }
       );
+
+      if (!productRes.ok) {
+        throw new Error("更新保養品失敗");
+      }
 
       const userId = localStorage.getItem("lineUserId");
 
@@ -441,10 +481,14 @@ function Skincare() {
       setShowForm(false);
       setShowDetail(false);
       setSelectedProduct(null);
+      resetForm();
+
     } catch (err) {
-      console.log(err);
+      console.error("更新保養品失敗：", err);
+      alert(err.message || "更新失敗，請稍後再試");
     }
   }
+
 
   // =========================
   // 搜尋
@@ -791,11 +835,19 @@ function Skincare() {
                       "manufacture"
                     );
 
+                    // 帶入原本的產品照片
+                    setSelectedImage(null);
+                    setImagePreview(selectedProduct.image_url || "");
+
+                    // 重設照片移除狀態
+                    setRemoveImage(false);
+
                     setEditMode(true);
 
                     setShowDetail(false);
 
                     setShowForm(true);
+
                   }}
                 >
                   ✏️ 編輯
@@ -896,19 +948,22 @@ function Skincare() {
                   type="button"
                   className="photo-remove-btn"
                   onClick={() => {
-                    setSelectedImage(null);
-
                     if (imagePreview.startsWith("blob:")) {
                       URL.revokeObjectURL(imagePreview);
                     }
 
+                    setSelectedImage(null);
                     setImagePreview("");
+                    setRemoveImage(true);
+
+                    const input = document.getElementById("skincare-image");
+                    if (input) input.value = "";
                   }}
                 >
                   移除照片
                 </button>
               )}
-              
+
               {/* 掃描辨識產品資訊 */}
               <div className="scan-section">
                 <button
