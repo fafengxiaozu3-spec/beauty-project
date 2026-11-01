@@ -17,12 +17,14 @@ function Cosmetics() {
   // 商品照片
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [removeImage, setRemoveImage] = useState(false);
+
   // 照片剪裁
-const [showCrop, setShowCrop] = useState(false);
-const [cropImage, setCropImage] = useState("");
-const [crop, setCrop] = useState({ x: 0, y: 0 });
-const [zoom, setZoom] = useState(1);
-const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCrop, setShowCrop] = useState(false);
+  const [cropImage, setCropImage] = useState("");
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
@@ -70,6 +72,7 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
     setSelectedImage(null);
     setImagePreview("");
+    setRemoveImage(false);
     
     setDateMode("manufacture");
   }
@@ -385,24 +388,54 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     }
   }
 
+  
   // =========================
   // 更新產品
   // =========================
   async function updateProduct() {
-
     if (!selectedProduct) return;
 
     try {
+      let imageUrl = selectedProduct.image_url || "";
 
-      await fetch(
+      // 如果使用者移除照片
+      if (removeImage) {
+        imageUrl = "";
+      }
+
+      // 如果使用者選擇新照片，先上傳
+      if (selectedImage) {
+        const imageData = new FormData();
+        imageData.append("image", selectedImage);
+
+        const uploadRes = await fetch(
+          "https://mybeautystudio-backend.onrender.com/api/upload-image",
+          {
+            method: "POST",
+            body: imageData
+          }
+        );
+
+        if (!uploadRes.ok) {
+          throw new Error("照片上傳失敗");
+        }
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadData.image_url) {
+          throw new Error("後端沒有回傳圖片網址");
+        }
+
+        imageUrl = uploadData.image_url;
+      }
+
+      const productRes = await fetch(
         `https://mybeautystudio-backend.onrender.com/api/products/${selectedProduct.id}`,
         {
           method: "PATCH",
-
           headers: {
             "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             product_name: form.product_name,
             brand: form.brand,
@@ -417,17 +450,23 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                 : null,
 
             expire_months:
-              dateMode === "manufacture"
+              dateMode === "manufacture" && form.expire_months
                 ? Number(form.expire_months)
                 : null,
 
             expire_date:
               dateMode === "direct"
                 ? form.expire_date
-                : null
+                : null,
+
+            image_url: imageUrl
           })
         }
       );
+
+      if (!productRes.ok) {
+        throw new Error("更新商品失敗");
+      }
 
       const userId = localStorage.getItem("lineUserId");
 
@@ -435,13 +474,15 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
       setEditMode(false);
       setShowForm(false);
-
       setShowDetail(false);
+      resetForm();
 
     } catch (err) {
-      console.log(err);
+      console.error("更新化妝品失敗：", err);
+      alert(err.message || "更新失敗，請稍後再試");
     }
   }
+
 
   // =========================
   // 搜尋
@@ -807,6 +848,16 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                       "manufacture"
                     );
 
+                    // 帶入原本的產品照片
+                    setSelectedImage(null);
+                    setImagePreview(selectedProduct.image_url || "");
+
+                    // 重設照片移除狀態
+                    setRemoveImage(false);
+
+                    // 帶入原本的辨識顏色
+                    setDetectedColor(selectedProduct.color_hex || "");
+
                     setEditMode(true);
 
                     setShowDetail(false);
@@ -909,8 +960,13 @@ const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
                   type="button"
                   className="photo-remove-btn"
                   onClick={() => {
+                    if (imagePreview.startsWith("blob:")) {
+                      URL.revokeObjectURL(imagePreview);
+                    }
+
                     setSelectedImage(null);
                     setImagePreview("");
+                    setRemoveImage(true);
 
                     const input = document.getElementById("product-image");
                     if (input) input.value = "";
