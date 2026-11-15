@@ -532,10 +532,19 @@ function Cosmetics() {
     setDetectedColor("");
 
     try {
+      
+      const userId = localStorage.getItem("lineUserId");
+
+      if (!userId) {
+        throw new Error("無法取得使用者資料，請重新開啟頁面");
+      }
+
       const formData = new FormData();
 
       formData.append("image", file);
       formData.append("category", apiCategory);
+      formData.append("user_id", userId);
+
 
       const response = await fetch(
         "https://mybeautystudio-backend.onrender.com/api/analyze-color",
