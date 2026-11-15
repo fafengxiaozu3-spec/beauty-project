@@ -13,6 +13,8 @@ function Cosmetics() {
   const [showForm, setShowForm] = useState(false);
 
   const [detectedColor, setDetectedColor] = useState("");
+  const [analyzingColor, setAnalyzingColor] = useState(false);
+  const [colorError, setColorError] = useState("");
 
   // 商品照片
   const [selectedImage, setSelectedImage] = useState(null);
@@ -58,7 +60,11 @@ function Cosmetics() {
   // =========================
   function resetForm() {
     setEditMode(false);
+
+    // 清除 AI 顏色辨識結果與錯誤訊息
+    colorRequestId.current += 1;
     setDetectedColor("");
+    setColorError("");
 
     setForm({
       product_name: "",
@@ -73,7 +79,7 @@ function Cosmetics() {
     setSelectedImage(null);
     setImagePreview("");
     setRemoveImage(false);
-    
+
     setDateMode("manufacture");
   }
 
@@ -128,14 +134,21 @@ function Cosmetics() {
   // 表單輸入
   // =========================
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // 更換產品分類時，清除原本的辨識結果
+    if (name === "category" && value !== form.category) {
+      setDetectedColor("");
+      setColorError("");
+    }
   }
 
-  // 選擇商品照片
-  
+
   // =========================
   // 選擇商品照片
   // =========================
@@ -318,6 +331,12 @@ function Cosmetics() {
             brand: form.brand,
             category: form.category,
             shade: form.shade,
+
+             // AI 辨識的顏色
+            color_hex: ["唇彩", "腮紅"].includes(form.category)
+            ? detectedColor || null
+            : null,
+
             date_mode: dateMode,
             manufacture_date:
               dateMode === "manufacture"
@@ -442,6 +461,10 @@ function Cosmetics() {
             category: form.category,
             shade: form.shade,
 
+            color_hex: ["唇彩", "腮紅"].includes(form.category)
+              ? detectedColor || null
+              : null,
+
             date_mode: dateMode,
 
             manufacture_date:
@@ -483,6 +506,70 @@ function Cosmetics() {
     }
   }
 
+  // =========================
+  // 顏色辨識
+  // =========================
+
+  async function handleColorImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const categoryMap = {
+      唇彩: "lipstick",
+      腮紅: "blush"
+    };
+
+    const apiCategory = categoryMap[form.category];
+
+    if (!apiCategory) {
+      setColorError("目前只支援唇彩與腮紅辨識");
+      e.target.value = "";
+      return;
+    }
+
+    setAnalyzingColor(true);
+    setColorError("");
+    setDetectedColor("");
+
+    try {
+      const formData = new FormData();
+
+      formData.append("image", file);
+      formData.append("category", apiCategory);
+
+      const response = await fetch(
+        "https://mybeautystudio-backend.onrender.com/api/analyze-color",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const result = await response.json();
+
+      if (
+        !response.ok ||
+        !result.success ||
+        !/^#[0-9a-fA-F]{6}$/.test(result.color?.color_hex || "")
+      ) {
+        throw new Error(
+          result.message || result.error || "顏色辨識失敗"
+        );
+      }
+
+      setDetectedColor(result.color.color_hex);
+
+    } catch (error) {
+      console.error("AI 顏色辨識失敗：", error);
+
+      setColorError(error.message || "顏色辨識失敗，請重試");
+
+    } finally {
+      setAnalyzingColor(false);
+      e.target.value = "";
+    }
+  }
 
   // =========================
   // 搜尋
@@ -1052,40 +1139,62 @@ function Cosmetics() {
                   拍攝辨識產品顏色
               ========================= */}
 
-              <div className="color-scan-section">
-                <button
-                  type="button"
-                  className="color-scan-btn"
-                  onClick={() => {
-                    setDetectedColor("#C87585");
-                  }}
-                >
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+              {["唇彩", "腮紅"].includes(form.category) && (
+                <div className="color-scan-section">
+
+                  <label
+                    htmlFor="color-scan-image"
+                    className="color-scan-btn"
+                    style={{
+                      opacity: analyzingColor ? 0.6 : 1,
+                      pointerEvents: analyzingColor ? "none" : "auto"
+                    }}
                   >
-                    <path d="M4 8V5a1 1 0 0 1 1-1h3" />
-                    <path d="M16 4h3a1 1 0 0 1 1 1v3" />
-                    <path d="M20 16v3a1 1 0 0 1-1 1h-3" />
-                    <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4 8V5a1 1 0 0 1 1-1h3" />
+                      <path d="M16 4h3a1 1 0 0 1 1 1v3" />
+                      <path d="M20 16v3a1 1 0 0 1-1 1h-3" />
+                      <path d="M8 20H5a1 1 0 0 1-1-1v-3" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
 
-                  拍照辨識顏色
-                </button>
+                    {analyzingColor ? "AI 辨識中..." : "拍照辨識顏色"}
+                  </label>
 
-                {detectedColor && (
-                  <p className="detected-color-text">
-                    已辨識顏色：{detectedColor}
-                  </p>
-                )}
-              </div>
+                  <input
+                    id="color-scan-image"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleColorImageChange}
+                    disabled={analyzingColor}
+                    style={{ display: "none" }}
+                  />
+
+                  {detectedColor && (
+                    <p className="detected-color-text">
+                      已辨識顏色：{detectedColor}
+                    </p>
+                  )}
+
+                  {colorError && (
+                    <p className="detected-color-text" style={{ color: "#c44" }}>
+                      {colorError}
+                    </p>
+                  )}
+
+                </div>
+              )}
+
 
               {/* =========================
                   分類
