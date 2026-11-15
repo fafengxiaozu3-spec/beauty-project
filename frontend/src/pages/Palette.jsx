@@ -82,10 +82,6 @@ function Palette() {
   // 顏色分類
   const [activeGroup, setActiveGroup] = useState("全部");
 
-  const [activeCategory, setActiveCategory] = useState("口紅");
-
-  const productCategories = ["唇彩", "腮紅"];
-
   // 選取的產品
   const [selectedColor, setSelectedColor] = useState(null);
 
@@ -100,15 +96,26 @@ function Palette() {
   // =========================
   // 篩選色卡
   // =========================
-  const filteredColors = colors.filter((item) => {
-    const matchCategory = item.category === activeCategory;
 
+  const filteredColors = colors.filter((item) => {
     const matchColor =
       activeGroup === "全部" ||
       item.color_group === activeGroup;
 
-    return matchCategory && matchColor;
+    const matchCategory =
+      item.category === "唇彩" ||
+      item.category === "腮紅";
+
+    return matchColor && matchCategory;
   });
+
+  const lipColors = filteredColors.filter(
+    (item) => item.category === "唇彩"
+  );
+
+  const blushColors = filteredColors.filter(
+    (item) => item.category === "腮紅"
+  );
 
   // =========================
   // 控制背景不能滑動
@@ -149,25 +156,6 @@ function Palette() {
             </p>
           </div>
 
-          {/* 產品種類分類 */}
-          <div className="palette-filters">
-            {productCategories.map((category) => (
-              <button
-                key={category}
-                type="button"
-                className={`palette-filter-btn ${
-                  activeCategory === category ? "active" : ""
-                }`}
-                onClick={() => {
-                  setActiveCategory(category);
-                  setActiveGroup("全部");
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
           {/* 顏色分類 */}
           <div className="palette-filters">
             {colorGroups.map((group) => (
@@ -184,51 +172,104 @@ function Palette() {
             ))}
           </div>
 
-          {/* 色卡數量 */}
+          {/* 色卡總數 */}
           <div className="palette-count">
             共 {filteredColors.length} 款顏色
           </div>
 
-          {/* 色卡列表 */}
-          {filteredColors.length === 0 ? (
-            <div className="palette-empty">
-              <span>🎨</span>
-              <p>目前沒有這個色系的產品</p>
+          {/* 唇彩色卡 */}
+          <section className="palette-section">
+            <div className="palette-section-header">
+              <h3>💄 唇彩</h3>
+              <span>{lipColors.length} 款</span>
             </div>
-          ) : (
-            <div className="palette-grid">
-              {filteredColors.map((item) => (
-                <button
-                  type="button"
-                  key={item.id}
-                  className="palette-card"
-                  onClick={() => setSelectedColor(item)}
-                >
-                  <div
-                    className="palette-card-color"
-                    style={{
-                      backgroundColor: item.color_hex
-                    }}
-                  />
 
-                  <div className="palette-card-info">
-                    <p className="palette-card-brand">
-                      {item.brand}
-                    </p>
+            {lipColors.length === 0 ? (
+              <div className="palette-empty">
+                <p>目前沒有此色系的唇彩產品</p>
+              </div>
+            ) : (
+              <div className="palette-grid">
+                {lipColors.map((item) => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    className="palette-card"
+                    onClick={() => setSelectedColor(item)}
+                  >
+                    <div
+                      className="palette-card-color"
+                      style={{
+                        backgroundColor: item.color_hex
+                      }}
+                    />
 
-                    <p className="palette-card-name">
-                      {item.product_name}
-                    </p>
+                    <div className="palette-card-info">
+                      <p className="palette-card-brand">
+                        {item.brand}
+                      </p>
 
-                    <p className="palette-card-shade">
-                      色號：{item.shade}
-                    </p>
-                  </div>
-                </button>
-              ))}
+                      <p className="palette-card-name">
+                        {item.product_name}
+                      </p>
+
+                      <p className="palette-card-shade">
+                        色號：{item.shade}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* 腮紅色卡 */}
+          <section className="palette-section">
+            <div className="palette-section-header">
+              <h3>🌸 腮紅</h3>
+              <span>{blushColors.length} 款</span>
             </div>
-          )}
+
+            {blushColors.length === 0 ? (
+              <div className="palette-empty">
+                <p>目前沒有此色系的腮紅產品</p>
+              </div>
+            ) : (
+              <div className="palette-grid">
+                {blushColors.map((item) => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    className="palette-card"
+                    onClick={() => setSelectedColor(item)}
+                  >
+                    <div
+                      className="palette-card-color"
+                      style={{
+                        backgroundColor: item.color_hex
+                      }}
+                    />
+
+                    <div className="palette-card-info">
+                      <p className="palette-card-brand">
+                        {item.brand}
+                      </p>
+
+                      <p className="palette-card-name">
+                        {item.product_name}
+                      </p>
+
+                      <p className="palette-card-shade">
+                        色號：{item.shade}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
+
 
         {/* 色卡詳細資料 */}
         {selectedColor && (
