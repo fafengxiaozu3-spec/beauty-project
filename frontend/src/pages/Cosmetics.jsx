@@ -27,6 +27,9 @@ function Cosmetics() {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  
+  // 區分產品照片剪裁與 AI 顏色辨識剪裁
+  const [cropMode, setCropMode] = useState("product");
 
   // 詳細資料
   const [showDetail, setShowDetail] = useState(false);
@@ -171,6 +174,7 @@ function Cosmetics() {
     const reader = new FileReader();
 
     reader.onload = () => {
+      setCropMode("product");
       setCropImage(reader.result);
       setCrop({ x: 0, y: 0 });
       setZoom(1);
@@ -248,18 +252,34 @@ function Cosmetics() {
         croppedAreaPixels
       );
 
-      const preview = URL.createObjectURL(croppedFile);
+      if (cropMode === "color") {
+        // AI 顏色辨識：使用裁切後的照片
+        setShowCrop(false);
+        setCropImage("");
+        setCroppedAreaPixels(null);
 
-      setSelectedImage(croppedFile);
-      setImagePreview(preview);
+        await analyzeColor(croppedFile);
 
-      setShowCrop(false);
-      setCropImage("");
-      setCroppedAreaPixels(null);
+      } else {
+        // 原本的產品照片剪裁功能
+        const preview = URL.createObjectURL(croppedFile);
 
-    } catch (err) {
-      console.error("剪裁照片失敗：", err);
-      alert("照片剪裁失敗，請重新選擇圖片");
+        setSelectedImage(croppedFile);
+        setImagePreview(preview);
+
+        setShowCrop(false);
+        setCropImage("");
+        setCroppedAreaPixels(null);
+      }
+
+    } catch (error) {
+      console.error("照片剪裁失敗：", error);
+
+      if (cropMode === "color") {
+        setColorError("照片剪裁失敗，請重新拍攝");
+      } else {
+        alert("照片剪裁失敗，請重新選擇圖片");
+      }
     }
   }
 
@@ -273,7 +293,6 @@ function Cosmetics() {
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   }
-
   
   // =========================
   // 新增產品
@@ -508,12 +527,47 @@ function Cosmetics() {
   // =========================
   // 顏色辨識
   // =========================
-
-  async function handleColorImageChange(e) {
+  function handleColorImageChange(e) {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      setColorError("請選擇圖片檔案");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setColorError("圖片大小不能超過 10 MB");
+      e.target.value = "";
+      return;
+    }
+
+    setColorError("");
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setCropMode("color");
+      setCropImage(reader.result);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
+      setShowCrop(true);
+    };
+
+    reader.onerror = () => {
+      setColorError("照片讀取失敗，請重新拍攝");
+    };
+
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+  }
+
+
+  async function analyzeColor(file) {
     const categoryMap = {
       唇彩: "lipstick",
       腮紅: "blush"
@@ -523,7 +577,6 @@ function Cosmetics() {
 
     if (!apiCategory) {
       setColorError("目前只支援唇彩與腮紅辨識");
-      e.target.value = "";
       return;
     }
 
@@ -532,7 +585,6 @@ function Cosmetics() {
     setDetectedColor("");
 
     try {
-      
       const userId = localStorage.getItem("lineUserId");
 
       if (!userId) {
@@ -544,7 +596,6 @@ function Cosmetics() {
       formData.append("image", file);
       formData.append("category", apiCategory);
       formData.append("user_id", userId);
-
 
       const response = await fetch(
         "https://mybeautystudio-backend.onrender.com/api/analyze-color",
@@ -562,7 +613,9 @@ function Cosmetics() {
         !/^#[0-9a-fA-F]{6}$/.test(result.color?.color_hex || "")
       ) {
         throw new Error(
-          result.message || result.error || "顏色辨識失敗"
+          result.message ||
+          result.error ||
+          "顏色辨識失敗"
         );
       }
 
@@ -570,12 +623,10 @@ function Cosmetics() {
 
     } catch (error) {
       console.error("AI 顏色辨識失敗：", error);
-
       setColorError(error.message || "顏色辨識失敗，請重試");
 
     } finally {
       setAnalyzingColor(false);
-      e.target.value = "";
     }
   }
 
@@ -1320,7 +1371,18 @@ function Cosmetics() {
 
             <div className="crop-modal">
 
-              <h2>剪裁產品照片</h2>
+              <h2>
+                {cropMode === "color"
+                  ? "剪裁要辨識的顏色"
+                  : "剪裁產品照片"}
+              </h2>
+
+              {cropMode === "color" && (
+                <p className="crop-color-hint">
+                  請移動或放大照片，讓剪裁範圍盡量填滿
+                  要辨識的顏色，避免背景影響辨識結果。
+                </p>
+              )}
 
               <div className="crop-container">
                 <Cropper
@@ -1370,7 +1432,9 @@ function Cosmetics() {
                   className="crop-confirm"
                   onClick={confirmCrop}
                 >
-                  確認剪裁
+                  {cropMode === "color"
+                    ? "確認並辨識顏色"
+                    : "確認剪裁"}
                 </button>
 
               </div>
