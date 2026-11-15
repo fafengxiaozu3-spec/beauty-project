@@ -1090,15 +1090,19 @@ function Cosmetics() {
               {/* =========================
                   分類
               ========================= */}
-
-              <input
+              <select
                 name="category"
                 value={form.category}
-                placeholder="分類"
                 onChange={handleChange}
-              />
-
-
+              >
+                <option value="">請選擇產品分類</option>
+                <option value="唇彩">唇彩</option>
+                <option value="腮紅">腮紅</option>
+                <option value="眼影">眼影</option>
+                <option value="底妝">底妝</option>
+                <option value="眉彩">眉彩</option>
+                <option value="其他">其他</option>
+              </select>
 
               <select
                 value={dateMode}
