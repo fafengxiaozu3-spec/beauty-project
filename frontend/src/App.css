@@ -2673,8 +2673,7 @@ body {
   width: 100%;
   max-width: none;
   box-sizing: border-box;
-  padding: 20px;
-  padding-bottom: 90px;
+  padding: 20px 8px 90px;
 }
 
 .palette-intro {
@@ -2878,11 +2877,7 @@ body {
 
 @media (max-width: 600px) {
   .palette-page {
-    width: 100%;
-    max-width: none;
-    box-sizing: border-box;
-    padding: 20px;
-    padding-bottom: 90px;
+    padding: 16px 8px 90px;
   }
 
   .palette-grid {
