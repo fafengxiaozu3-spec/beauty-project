@@ -8,7 +8,8 @@ const colorGroups = [
   "粉色系",
   "紅色系",
   "橘色系",
-  "棕色系"
+  "棕色系",
+  "其他色系"
 ];
 
 function getColorGroup(hex) {
@@ -38,40 +39,44 @@ function getColorGroup(hex) {
     hue = (hue * 60 + 360) % 360;
   }
 
-  const saturation =
-    max === 0 ? 0 : delta / max;
-
+  // HSL 飽和度與亮度
   const lightness = (max + min) / 2;
 
-  // 低飽和度、偏暗的暖色
+  const saturation =
+    delta === 0
+      ? 0
+      : delta / (1 - Math.abs(2 * lightness - 1));
+
+  // 棕色系：偏暗或低飽和的暖色
   if (
-    (hue <= 65 || hue >= 345) &&
-    saturation < 0.38 &&
-    lightness < 0.72
+    (hue < 65 || hue >= 345) &&
+    lightness < 0.58 &&
+    saturation < 0.5
   ) {
     return "棕色系";
   }
 
-  // 粉色
+  // 粉色系
   if (
-    (hue >= 320 || hue < 15) &&
-    lightness >= 0.62
+    (hue >= 320 || hue < 10) &&
+    lightness >= 0.65
   ) {
     return "粉色系";
   }
 
-  // 紅色
-  if (hue >= 345 || hue < 15) {
-    return "紅色系";
+  // 橘色系：包含偏紅的陶土橘
+  if (hue >= 10 && hue < 65) {
+    return "橘色系";
   }
 
-  // 橘色
-  if (hue >= 15 && hue < 65) {
-    return "橘色系";
+  // 紅色系
+  if (hue >= 345 || hue < 10) {
+    return "紅色系";
   }
 
   return "其他色系";
 }
+
 
 function Palette() {
   const [menuOpen, setMenuOpen] = useState(false);
