@@ -2663,3 +2663,232 @@ body {
   color: #a18e95;
   text-align: center;
 }
+
+
+/* =========================
+   我的色卡頁面
+========================= */
+
+.palette-page {
+  padding: 20px;
+  padding-bottom: 90px;
+}
+
+.palette-intro {
+  margin-bottom: 24px;
+}
+
+.palette-intro h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+  color: #51454a;
+}
+
+.palette-intro p {
+  margin: 0;
+  font-size: 14px;
+  color: #a18e95;
+  line-height: 1.6;
+}
+
+/* 顏色分類 */
+
+.palette-filters {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.palette-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.palette-filter-btn {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border: 1px solid #f0d4dd;
+  border-radius: 20px;
+  background: white;
+  color: #9f7f8b;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.palette-filter-btn.active {
+  background: #d88fa6;
+  color: white;
+  border-color: #d88fa6;
+}
+
+/* 色卡數量 */
+
+.palette-count {
+  margin: 12px 0 16px;
+  color: #a18e95;
+  font-size: 13px;
+}
+
+/* 色卡列表 */
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.palette-card {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #f2e2e7;
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.035);
+  transition: transform 0.2s ease;
+}
+
+.palette-card:hover {
+  transform: translateY(-3px);
+}
+
+.palette-card-color {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+}
+
+.palette-card-info {
+  padding: 10px 2px 2px;
+}
+
+.palette-card-brand {
+  margin: 0 0 5px;
+  font-size: 12px;
+  color: #b08e9a;
+}
+
+.palette-card-name {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #51454a;
+  overflow-wrap: anywhere;
+}
+
+.palette-card-shade {
+  margin: 0;
+  font-size: 12px;
+  color: #a18e95;
+}
+
+/* 無色卡資料 */
+
+.palette-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #a18e95;
+}
+
+.palette-empty span {
+  font-size: 40px;
+}
+
+.palette-empty p {
+  font-size: 14px;
+}
+
+/* =========================
+   色卡詳細資料
+========================= */
+
+.palette-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.palette-detail {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90%, 420px);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 25px;
+  border-radius: 20px;
+  background: white;
+  z-index: 1001;
+}
+
+.palette-detail h2 {
+  margin: 0 0 20px;
+  text-align: center;
+  color: #51454a;
+  font-size: 20px;
+}
+
+.palette-detail-close {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  border: none;
+  background: none;
+  color: #9f7f8b;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.palette-detail-color {
+  width: 100%;
+  height: 160px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+}
+
+.palette-detail-info > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3e8ec;
+}
+
+.palette-detail-info span {
+  color: #a18e95;
+  font-size: 14px;
+}
+
+.palette-detail-info strong {
+  color: #51454a;
+  font-size: 14px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* 手機版 */
+
+@media (max-width: 600px) {
+  .palette-page {
+    padding: 16px;
+    padding-bottom: 90px;
+  }
+
+  .palette-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .palette-card {
+    padding: 8px;
+  }
+
+  .palette-intro h2 {
+    font-size: 19px;
+  }
+}
