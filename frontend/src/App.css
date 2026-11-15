@@ -2877,6 +2877,9 @@ body {
 
 @media (max-width: 600px) {
   .palette-page {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
     padding: 16px 8px 90px;
   }
 
