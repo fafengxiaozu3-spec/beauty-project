@@ -2670,6 +2670,9 @@ body {
 ========================= */
 
 .palette-page {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
   padding: 20px;
   padding-bottom: 90px;
 }
@@ -2875,7 +2878,10 @@ body {
 
 @media (max-width: 600px) {
   .palette-page {
-    padding: 16px;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 20px;
     padding-bottom: 90px;
   }
 
