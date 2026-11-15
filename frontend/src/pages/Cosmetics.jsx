@@ -62,7 +62,6 @@ function Cosmetics() {
     setEditMode(false);
 
     // 清除 AI 顏色辨識結果與錯誤訊息
-    colorRequestId.current += 1;
     setDetectedColor("");
     setColorError("");
 
