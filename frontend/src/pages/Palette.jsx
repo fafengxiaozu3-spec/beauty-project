@@ -82,6 +82,10 @@ function Palette() {
   // 顏色分類
   const [activeGroup, setActiveGroup] = useState("全部");
 
+  const [activeCategory, setActiveCategory] = useState("口紅");
+
+  const productCategories = ["唇彩", "腮紅"];
+
   // 選取的產品
   const [selectedColor, setSelectedColor] = useState(null);
 
@@ -97,9 +101,13 @@ function Palette() {
   // 篩選色卡
   // =========================
   const filteredColors = colors.filter((item) => {
-    if (activeGroup === "全部") return true;
+    const matchCategory = item.category === activeCategory;
 
-    return item.color_group === activeGroup;
+    const matchColor =
+      activeGroup === "全部" ||
+      item.color_group === activeGroup;
+
+    return matchCategory && matchColor;
   });
 
   // =========================
@@ -139,6 +147,25 @@ function Palette() {
               整理你的美妝產品顏色，
               輕鬆查看每一款色號。
             </p>
+          </div>
+
+          {/* 產品種類分類 */}
+          <div className="palette-filters">
+            {productCategories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={`palette-filter-btn ${
+                  activeCategory === category ? "active" : ""
+                }`}
+                onClick={() => {
+                  setActiveCategory(category);
+                  setActiveGroup("全部");
+                }}
+              >
+                {category}
+              </button>
+            ))}
           </div>
 
           {/* 顏色分類 */}
