@@ -4,67 +4,6 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { initLiff } from "../services/liff";
 
-// =========================
-// 測試色卡資料
-// 未來改成從後端 API 取得
-// =========================
-const demoColors = [
-  {
-    id: 1,
-    product_name: "柔霧唇釉",
-    brand: "品牌 A",
-    category: "唇彩",
-    shade: "01",
-    color_hex: "#C87585",
-    color_group: "粉色系"
-  },
-  {
-    id: 2,
-    product_name: "絲絨口紅",
-    brand: "品牌 B",
-    category: "唇彩",
-    shade: "05",
-    color_hex: "#A93E51",
-    color_group: "紅色系"
-  },
-  {
-    id: 3,
-    product_name: "單色眼影",
-    brand: "品牌 C",
-    category: "眼影",
-    shade: "02",
-    color_hex: "#C98960",
-    color_group: "橘色系"
-  },
-  {
-    id: 4,
-    product_name: "奶茶腮紅",
-    brand: "品牌 D",
-    category: "腮紅",
-    shade: "03",
-    color_hex: "#B88C83",
-    color_group: "棕色系"
-  },
-  {
-    id: 5,
-    product_name: "水光唇蜜",
-    brand: "品牌 E",
-    category: "唇彩",
-    shade: "04",
-    color_hex: "#E4A0AD",
-    color_group: "粉色系"
-  },
-  {
-    id: 6,
-    product_name: "霧面唇膏",
-    brand: "品牌 F",
-    category: "唇彩",
-    shade: "06",
-    color_hex: "#963F4D",
-    color_group: "紅色系"
-  }
-];
-
 const colorGroups = [
   "全部",
   "粉色系",
@@ -73,11 +12,79 @@ const colorGroups = [
   "棕色系"
 ];
 
+function getColorGroup(hex) {
+  if (!/^#[0-9a-fA-F]{6}$/.test(hex || "")) {
+    return "其他色系";
+  }
+
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let hue = 0;
+
+  if (delta !== 0) {
+    if (max === r) {
+      hue = ((g - b) / delta) % 6;
+    } else if (max === g) {
+      hue = (b - r) / delta + 2;
+    } else {
+      hue = (r - g) / delta + 4;
+    }
+
+    hue = (hue * 60 + 360) % 360;
+  }
+
+  const saturation =
+    max === 0 ? 0 : delta / max;
+
+  const lightness = (max + min) / 2;
+
+  // 低飽和度、偏暗的暖色
+  if (
+    (hue <= 65 || hue >= 345) &&
+    saturation < 0.38 &&
+    lightness < 0.72
+  ) {
+    return "棕色系";
+  }
+
+  // 粉色
+  if (
+    (hue >= 320 || hue < 15) &&
+    lightness >= 0.62
+  ) {
+    return "粉色系";
+  }
+
+  // 紅色
+  if (hue >= 345 || hue < 15) {
+    return "紅色系";
+  }
+
+  // 橘色
+  if (hue >= 15 && hue < 65) {
+    return "橘色系";
+  }
+
+  return "其他色系";
+}
+
 function Palette() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // 色卡資料
-  const [colors] = useState(demoColors);
+  // 從後端取得的色卡資料
+  const [colors, setColors] = useState([]);
+
+  // 載入狀態
+  const [loadingColors, setLoadingColors] = useState(true);
+
+  // 錯誤訊息
+  const [loadError, setLoadError] = useState("");
 
   // 顏色分類
   const [activeGroup, setActiveGroup] = useState("全部");
@@ -90,8 +97,66 @@ function Palette() {
   }
 
   useEffect(() => {
-    initLiff();
+    async function loadColors() {
+      setLoadingColors(true);
+      setLoadError("");
+
+      try {
+        const profile = await initLiff();
+
+        if (!profile) {
+          throw new Error("無法取得使用者資料");
+        }
+
+        const userId = profile.userId;
+
+        const response = await fetch(
+          `https://mybeautystudio-backend.onrender.com/api/products?user_id=${encodeURIComponent(userId)}&product_type=cosmetics`
+        );
+
+        if (!response.ok) {
+          throw new Error("取得化妝品資料失敗");
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error("後端回傳的資料格式不正確");
+        }
+
+        // 只保留有 AI 辨識色碼的唇彩與腮紅
+        const paletteProducts = data
+          .filter((item) => {
+            const validCategory =
+              item.category === "唇彩" ||
+              item.category === "腮紅";
+
+            const validColor =
+              /^#[0-9a-fA-F]{6}$/.test(
+                item.color_hex || ""
+              );
+
+            return validCategory && validColor;
+          })
+          .map((item) => ({
+            ...item,
+            color_group: getColorGroup(item.color_hex)
+          }));
+
+        setColors(paletteProducts);
+
+      } catch (error) {
+        console.error("取得色卡失敗：", error);
+        setLoadError(error.message || "色卡載入失敗");
+
+      } finally {
+        setLoadingColors(false);
+      }
+    }
+
+    loadColors();
   }, []);
+
 
   // =========================
   // 篩選色卡
@@ -174,15 +239,23 @@ function Palette() {
 
           {/* 色卡總數 */}
           <div className="palette-count">
-            共 {filteredColors.length} 款顏色
+            {loadingColors
+              ? "正在載入色卡..."
+              : loadError
+                ? loadError
+                : `共 ${filteredColors.length} 款顏色`}
           </div>
 
-          {/* 唇彩色卡 */}
-          <section className="palette-section">
-            <div className="palette-section-header">
-              <h3>💄 唇彩</h3>
-              <span>{lipColors.length} 款</span>
-            </div>
+          {/* 資料載入完成後才顯示色卡 */}
+          {!loadingColors && !loadError && (
+            <>
+              {/* 唇彩色卡 */}
+              <section className="palette-section">
+                <div className="palette-section-header">
+                  <h3>💄 唇彩</h3>
+                  <span>{lipColors.length} 款</span>
+                </div>
+
 
             {lipColors.length === 0 ? (
               <div className="palette-empty">
@@ -267,12 +340,17 @@ function Palette() {
                 ))}
               </div>
             )}
+          
           </section>
-        </div>
 
+        </>
+      )}
 
-        {/* 色卡詳細資料 */}
-        {selectedColor && (
+    </div>
+
+    {/* 色卡詳細資料 */}
+    {selectedColor && (
+
           <>
             <div
               className="palette-detail-overlay"
