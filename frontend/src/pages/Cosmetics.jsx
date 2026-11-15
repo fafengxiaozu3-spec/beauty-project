@@ -1379,8 +1379,7 @@ function Cosmetics() {
 
               {cropMode === "color" && (
                 <p className="crop-color-hint">
-                  請移動或放大照片，讓剪裁範圍盡量填滿
-                  要辨識的顏色，避免背景影響辨識結果。
+                  請移動或放大照片，讓範圍盡量填滿顏色，避免背景影響辨識結果
                 </p>
               )}
 
