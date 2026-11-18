@@ -555,15 +555,8 @@ function Palette() {
                       <p className="palette-card-brand">
                         {item.brand}
                       </p>
-
-                      <p className="palette-card-name">
-                        {item.product_name}
-                      </p>
-
-                      <p className="palette-card-shade">
-                        色號：{item.shade}
-                      </p>
                     </div>
+                    
                   </button>
                 ))}
               </div>
@@ -602,13 +595,6 @@ function Palette() {
                         {item.brand}
                       </p>
 
-                      <p className="palette-card-name">
-                        {item.product_name}
-                      </p>
-
-                      <p className="palette-card-shade">
-                        色號：{item.shade}
-                      </p>
                     </div>
                   </button>
                 ))}
