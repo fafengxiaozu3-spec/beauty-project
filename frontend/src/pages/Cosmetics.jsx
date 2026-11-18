@@ -63,6 +63,39 @@ function Cosmetics() {
   const [analyzingProduct, setAnalyzingProduct] = useState(false);
   const [ocrError, setOcrError] = useState("");
 
+  const [ocrFrontPreview, setOcrFrontPreview] = useState("");
+  const [ocrLabelPreview, setOcrLabelPreview] = useState("");
+
+  // =========================
+  // OCR 正面照片預覽
+  // =========================
+  useEffect(() => {
+    if (!ocrFrontImage) {
+      setOcrFrontPreview("");
+      return;
+    }
+
+    const url = URL.createObjectURL(ocrFrontImage);
+    setOcrFrontPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [ocrFrontImage]);
+
+  // =========================
+  // OCR 背面照片預覽
+  // =========================
+  useEffect(() => {
+    if (!ocrLabelImage) {
+      setOcrLabelPreview("");
+      return;
+    }
+
+    const url = URL.createObjectURL(ocrLabelImage);
+    setOcrLabelPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [ocrLabelImage]);
+
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
   }
@@ -1567,19 +1600,15 @@ function Cosmetics() {
               </div>
 
               <p className="ocr-description">
-                請拍攝商品正面或背面標籤，
-                系統將自動辨識產品資訊。
-                至少上傳一張照片即可。
+                拍攝產品正面及背面標籤，自動辨識品牌、
+                名稱、分類、色號與效期資訊。
               </p>
 
+              {/* 正面與背面照片 */}
               <div className="ocr-image-group">
 
                 {/* 商品正面 */}
                 <div className="ocr-image-item">
-                  <label htmlFor="ocr-front-image">
-                    商品正面
-                  </label>
-
                   <input
                     id="ocr-front-image"
                     type="file"
@@ -1588,31 +1617,67 @@ function Cosmetics() {
                       handleOcrImage(e, "front")
                     }
                     disabled={analyzingProduct}
+                    hidden
                   />
 
-                  {ocrFrontImage && (
-                    <div className="ocr-image-selected">
-                      <span>{ocrFrontImage.name}</span>
+                  <label
+                    htmlFor="ocr-front-image"
+                    className="ocr-upload-box"
+                  >
+                    {ocrFrontImage ? (
+                      <>
+                        <img
+                          src={ocrFrontPreview}
+                          alt="商品正面預覽"
+                          className="ocr-preview"
+                        />
+                        <span className="ocr-upload-overlay">
+                          更換照片
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          width="30"
+                          height="30"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="3"
+                          />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="m3 16 5-5 4 4 3-3 6 6" />
+                        </svg>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOcrFrontImage(null)
-                        }
-                        disabled={analyzingProduct}
-                      >
-                        移除
-                      </button>
-                    </div>
+                        <strong>商品正面</strong>
+                        <span>點擊上傳</span>
+                      </>
+                    )}
+                  </label>
+
+                  {ocrFrontImage && (
+                    <button
+                      type="button"
+                      className="ocr-remove-image"
+                      onClick={() => setOcrFrontImage(null)}
+                      disabled={analyzingProduct}
+                    >
+                      ✕
+                    </button>
                   )}
                 </div>
 
-                {/* 商品背面或標籤 */}
+                {/* 商品背面 */}
                 <div className="ocr-image-item">
-                  <label htmlFor="ocr-label-image">
-                    商品背面／標籤
-                  </label>
-
                   <input
                     id="ocr-label-image"
                     type="file"
@@ -1621,26 +1686,70 @@ function Cosmetics() {
                       handleOcrImage(e, "label")
                     }
                     disabled={analyzingProduct}
+                    hidden
                   />
 
-                  {ocrLabelImage && (
-                    <div className="ocr-image-selected">
-                      <span>{ocrLabelImage.name}</span>
+                  <label
+                    htmlFor="ocr-label-image"
+                    className="ocr-upload-box"
+                  >
+                    {ocrLabelImage ? (
+                      <>
+                        <img
+                          src={ocrLabelPreview}
+                          alt="商品背面預覽"
+                          className="ocr-preview"
+                        />
+                        <span className="ocr-upload-overlay">
+                          更換照片
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          width="30"
+                          height="30"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <rect
+                            x="3"
+                            y="3"
+                            width="18"
+                            height="18"
+                            rx="3"
+                          />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="m3 16 5-5 4 4 3-3 6 6" />
+                        </svg>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setOcrLabelImage(null)
-                        }
-                        disabled={analyzingProduct}
-                      >
-                        移除
-                      </button>
-                    </div>
+                        <strong>背面／標籤</strong>
+                        <span>點擊上傳</span>
+                      </>
+                    )}
+                  </label>
+
+                  {ocrLabelImage && (
+                    <button
+                      type="button"
+                      className="ocr-remove-image"
+                      onClick={() => setOcrLabelImage(null)}
+                      disabled={analyzingProduct}
+                    >
+                      ✕
+                    </button>
                   )}
                 </div>
 
               </div>
+
+              <p className="ocr-upload-hint">
+                至少上傳一張照片即可進行辨識
+              </p>
 
               {ocrError && (
                 <p className="ocr-error">
@@ -1651,13 +1760,11 @@ function Cosmetics() {
               {analyzingProduct && (
                 <div className="ocr-loading">
                   <div className="loading-circle"></div>
-                  <p>
-                    AI 正在辨識產品資訊，
-                    請稍候...
-                  </p>
+                  <p>AI 正在辨識產品資訊，請稍候...</p>
                 </div>
               )}
 
+              {/* 操作按鈕 */}
               <div className="ocr-actions">
                 <button
                   type="button"
@@ -1677,6 +1784,23 @@ function Cosmetics() {
                     (!ocrFrontImage && !ocrLabelImage)
                   }
                 >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                    <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+                    <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+                    <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+                    <circle cx="12" cy="12" r="4" />
+                  </svg>
+
                   {analyzingProduct
                     ? "辨識中..."
                     : "開始辨識"}
@@ -1686,6 +1810,7 @@ function Cosmetics() {
             </div>
           </div>
         )}
+
         
         {/* =========================
             照片剪裁視窗
