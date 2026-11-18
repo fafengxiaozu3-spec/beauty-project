@@ -3396,3 +3396,36 @@ body {
   }
 }
 
+/* =========================
+   色卡頁面：文字顏色修正
+========================= */
+
+/* 1. 色卡品牌名稱 */
+.palette-card .palette-card-brand {
+  color: #444;
+}
+
+/* 2. 未選取的產品類型按鈕 */
+.palette-compare-types button:not(.active) {
+  color: #444;
+}
+
+/* 3. 已選取的產品類型按鈕 */
+.palette-compare-types button.active {
+  color: #fff;
+}
+
+/* 4. AI 比對視窗右上角叉叉 */
+.palette-compare-close {
+  color: #555;
+}
+
+/* 5. 拍照剪裁後的取消按鈕 */
+.palette-compare-actions button:first-child {
+  color: #555;
+}
+
+/* 6. 拍照剪裁後的確認並辨識按鈕 */
+.palette-compare-actions button:last-child {
+  color: #fff;
+}
