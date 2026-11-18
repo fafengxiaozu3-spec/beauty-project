@@ -699,11 +699,7 @@ function Palette() {
               ✕
             </button>
 
-            <h2>AI 相似色比對</h2>
-            <p className="palette-compare-desc">
-              拍攝想比較的產品顏色，
-              查看色卡中是否已有相近色號。
-            </p>
+            <h2>AI 即時辨識相似色號</h2>
 
             {!showCompareCrop && !compareResult && (
               <>
