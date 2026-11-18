@@ -556,7 +556,7 @@ function Palette() {
                         {item.brand}
                       </p>
                     </div>
-                    
+
                   </button>
                 ))}
               </div>
@@ -857,8 +857,7 @@ function Palette() {
                 {compareResult.matches.length > 0 ? (
                   <>
                     <p className="palette-compare-warning">
-                      你的色卡中已有相近的顏色，
-                      購買前可以先比較現有產品！
+                      你已有相似色號，購買前可以先確認，避免購入相近的顏色
                     </p>
 
                     {compareResult.matches.map((item) => (
