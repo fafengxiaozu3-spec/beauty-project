@@ -54,6 +54,15 @@ function Cosmetics() {
 
   const [dateMode, setDateMode] = useState("manufacture");
 
+  // =========================
+  // OCR 商品資訊辨識
+  // =========================
+  const [showOcr, setShowOcr] = useState(false);
+  const [ocrFrontImage, setOcrFrontImage] = useState(null);
+  const [ocrLabelImage, setOcrLabelImage] = useState(null);
+  const [analyzingProduct, setAnalyzingProduct] = useState(false);
+  const [ocrError, setOcrError] = useState("");
+
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
   }
@@ -84,6 +93,182 @@ function Cosmetics() {
 
     setDateMode("manufacture");
   }
+
+
+  // =========================
+  // 開啟 OCR 商品資訊掃描
+  // =========================
+  function openOcr() {
+    setOcrFrontImage(null);
+    setOcrLabelImage(null);
+    setOcrError("");
+    setShowOcr(true);
+  }
+
+  function closeOcr() {
+    if (analyzingProduct) return;
+
+    setShowOcr(false);
+    setOcrFrontImage(null);
+    setOcrLabelImage(null);
+    setOcrError("");
+  }
+
+  // =========================
+  // OCR 圖片檢查
+  // =========================
+  function handleOcrImage(e, type) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setOcrError("請選擇圖片檔案");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setOcrError("單張圖片不能超過 10 MB");
+      return;
+    }
+
+    setOcrError("");
+
+    if (type === "front") {
+      setOcrFrontImage(file);
+    } else {
+      setOcrLabelImage(file);
+    }
+  }
+
+  // =========================
+  // OCR 商品資訊辨識
+  // =========================
+  async function analyzeProductInfo() {
+    if (analyzingProduct) return;
+
+    if (!ocrFrontImage && !ocrLabelImage) {
+      setOcrError("請至少上傳一張商品照片");
+      return;
+    }
+
+    setAnalyzingProduct(true);
+    setOcrError("");
+
+    try {
+      const formData = new FormData();
+
+      if (ocrFrontImage) {
+        formData.append("front_image", ocrFrontImage);
+      }
+
+      if (ocrLabelImage) {
+        formData.append("label_image", ocrLabelImage);
+      }
+
+      const response = await fetch(
+        "https://mybeautystudio-backend.onrender.com/api/analyze-product",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const result = await response.json();
+
+      if (
+        !response.ok ||
+        !result.success ||
+        !result.product
+      ) {
+        throw new Error(
+          result.message ||
+          result.error ||
+          "商品資訊辨識失敗"
+        );
+      }
+
+      const product = result.product;
+
+      // 前端目前支援的化妝品分類
+      const validCategories = [
+        "唇彩",
+        "腮紅",
+        "眼影",
+        "底妝",
+        "眉彩",
+        "其他"
+      ];
+
+      const recognizedCategory =
+        typeof product.category === "string"
+          ? product.category.trim()
+          : "";
+
+      // 不直接將未知分類填入 select
+      const category = validCategories.includes(
+        recognizedCategory
+      )
+        ? recognizedCategory
+        : "";
+
+      // OCR date_mode 轉成前端使用的格式
+      let nextDateMode = "manufacture";
+
+      if (product.date_mode === "direct") {
+        nextDateMode = "direct";
+      } else if (
+        product.date_mode === "manufacture" ||
+        product.date_mode === "calculate"
+      ) {
+        nextDateMode = "manufacture";
+      } else if (
+        product.expire_date &&
+        !product.manufacture_date
+      ) {
+        nextDateMode = "direct";
+      }
+
+      // 將辨識結果填入原本表單
+      setForm((prev) => ({
+        ...prev,
+        brand: product.brand || prev.brand,
+        product_name:
+          product.product_name || prev.product_name,
+        category: category || prev.category,
+        shade: product.shade || prev.shade,
+        manufacture_date:
+          product.manufacture_date || "",
+        expire_months:
+          product.expire_months ?? "",
+        expire_date:
+          product.expire_date || ""
+      }));
+
+      setDateMode(nextDateMode);
+
+      // 如果分類改變，清除原本辨識的顏色
+      if (category && category !== form.category) {
+        setDetectedColor("");
+        setColorError("");
+      }
+
+      // 關閉 OCR 視窗，返回新增表單
+      setShowOcr(false);
+      setOcrFrontImage(null);
+      setOcrLabelImage(null);
+
+    } catch (error) {
+      console.error("OCR 商品辨識失敗：", error);
+      setOcrError(
+        error.message || "商品資訊辨識失敗，請重試"
+      );
+    } finally {
+      setAnalyzingProduct(false);
+    }
+  }
+
 
   // =========================
   // 取得使用者化妝品
@@ -1127,9 +1312,7 @@ function Cosmetics() {
                 <button
                   type="button"
                   className="scan-product-btn"
-                  onClick={() => {
-                    alert("掃描辨識功能即將推出！");
-                  }}
+                  onClick={openOcr}
                 >
                   <svg
                     className="scan-icon"
@@ -1360,6 +1543,148 @@ function Cosmetics() {
 
           </>
 
+        )}
+
+        {/* =========================
+            OCR 商品資訊掃描視窗
+        ========================= */}
+
+        {showOcr && (
+          <div className="ocr-overlay">
+            <div className="ocr-modal">
+
+              <div className="ocr-header">
+                <h2>AI 掃描產品資訊</h2>
+
+                <button
+                  type="button"
+                  className="ocr-close"
+                  onClick={closeOcr}
+                  disabled={analyzingProduct}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="ocr-description">
+                請拍攝商品正面或背面標籤，
+                系統將自動辨識產品資訊。
+                至少上傳一張照片即可。
+              </p>
+
+              <div className="ocr-image-group">
+
+                {/* 商品正面 */}
+                <div className="ocr-image-item">
+                  <label htmlFor="ocr-front-image">
+                    商品正面
+                  </label>
+
+                  <input
+                    id="ocr-front-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleOcrImage(e, "front")
+                    }
+                    disabled={analyzingProduct}
+                  />
+
+                  {ocrFrontImage && (
+                    <div className="ocr-image-selected">
+                      <span>{ocrFrontImage.name}</span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOcrFrontImage(null)
+                        }
+                        disabled={analyzingProduct}
+                      >
+                        移除
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* 商品背面或標籤 */}
+                <div className="ocr-image-item">
+                  <label htmlFor="ocr-label-image">
+                    商品背面／標籤
+                  </label>
+
+                  <input
+                    id="ocr-label-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleOcrImage(e, "label")
+                    }
+                    disabled={analyzingProduct}
+                  />
+
+                  {ocrLabelImage && (
+                    <div className="ocr-image-selected">
+                      <span>{ocrLabelImage.name}</span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOcrLabelImage(null)
+                        }
+                        disabled={analyzingProduct}
+                      >
+                        移除
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+
+              {ocrError && (
+                <p className="ocr-error">
+                  {ocrError}
+                </p>
+              )}
+
+              {analyzingProduct && (
+                <div className="ocr-loading">
+                  <div className="loading-circle"></div>
+                  <p>
+                    AI 正在辨識產品資訊，
+                    請稍候...
+                  </p>
+                </div>
+              )}
+
+              <div className="ocr-actions">
+                <button
+                  type="button"
+                  className="ocr-cancel"
+                  onClick={closeOcr}
+                  disabled={analyzingProduct}
+                >
+                  取消
+                </button>
+
+                <button
+                  type="button"
+                  className="ocr-confirm"
+                  onClick={analyzeProductInfo}
+                  disabled={
+                    analyzingProduct ||
+                    (!ocrFrontImage && !ocrLabelImage)
+                  }
+                >
+                  {analyzingProduct
+                    ? "辨識中..."
+                    : "開始辨識"}
+                </button>
+              </div>
+
+            </div>
+          </div>
         )}
         
         {/* =========================
