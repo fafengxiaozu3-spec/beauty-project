@@ -599,37 +599,37 @@ function Palette() {
       )}
 
     </div>
+    
+    {/* AI 相似色掃描按鈕 */}
+    <button
+      type="button"
+      className="palette-compare-fab"
+      onClick={openCompare}
+      aria-label="AI 相似色掃描"
+    >
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+        <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+        <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+        <path d="M8 21H5a2 2 0 0 1-2 2h-3" />
+        <circle cx="12" cy="12" r="4" />
+      </svg>
+    </button>  
+
 
     {/* 色卡詳細資料 */}
     {selectedColor && (
-
           <>
-            {/* AI 相似色掃描按鈕 */}
-            <button
-              type="button"
-              className="palette-compare-fab"
-              onClick={openCompare}
-              aria-label="AI 相似色掃描"
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-                <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-                <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
-                <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
-                <circle cx="12" cy="12" r="4" />
-              </svg>
-            </button>
-
             <div
               className="palette-detail-overlay"
               onClick={() => setSelectedColor(null)}
