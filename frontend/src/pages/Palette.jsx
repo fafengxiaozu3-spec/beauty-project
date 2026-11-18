@@ -48,31 +48,46 @@ function getColorGroup(hex) {
       ? 0
       : delta / (1 - Math.abs(2 * lightness - 1));
 
-  // 淺粉、玫瑰粉、豆沙粉
+  // =========================
+  // 棕色系
+  // =========================
   if (
-    (hue >= 320 || hue < 15) &&
+    (hue >= 10 && hue < 65) &&
+    lightness < 0.58 &&
+    saturation < 0.55
+  ) {
+    return "棕色系";
+  }
+
+  // =========================
+  // 橘色系
+  // =========================
+  if (hue >= 15 && hue < 65) {
+    return "橘色系";
+  }
+
+  // =========================
+  // 粉色系
+  // =========================
+  if (
+    (hue >= 330 || hue < 15) &&
     (
-      lightness >= 0.68 ||
-      (lightness >= 0.48 && saturation <= 0.65)
+      lightness >= 0.65 ||
+      (
+        lightness >= 0.48 &&
+        lightness < 0.65 &&
+        saturation >= 0.15 &&
+        saturation <= 0.55
+      )
     )
   ) {
     return "粉色系";
   }
 
-  // 偏暗、低飽和的暖色
-  if (
-    (hue < 65 || hue >= 345) &&
-    lightness < 0.48 &&
-    saturation < 0.5
-  ) {
-    return "棕色系";
-  }
-
-  if (hue >= 15 && hue < 65) {
-    return "橘色系";
-  }
-
-  if (hue >= 345 || hue < 15) {
+  // =========================
+  // 紅色系
+  // =========================
+  if (hue >= 330 || hue < 15) {
     return "紅色系";
   }
 
