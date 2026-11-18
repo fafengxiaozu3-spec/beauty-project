@@ -2982,6 +2982,8 @@ body {
   align-items: center;
   justify-content: center;
   padding: 16px;
+
+  overscroll-behavior: contain;
 }
 
 /* 比對視窗 */
@@ -2995,6 +2997,9 @@ body {
   border-radius: 18px;
   padding: 24px 18px;
   box-sizing: border-box;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .palette-compare-close {

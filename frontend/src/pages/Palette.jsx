@@ -155,6 +155,22 @@ function Palette() {
   const [compareResult, setCompareResult] = useState(null);
   const [compareError, setCompareError] = useState("");
 
+  // =========================
+  // 彈出視窗開啟時禁止背景捲動
+  // =========================
+  useEffect(() => {
+    if (showCompare || showCompareCrop || selectedColor) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showCompare, showCompareCrop, selectedColor]);
+
+  
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
   }

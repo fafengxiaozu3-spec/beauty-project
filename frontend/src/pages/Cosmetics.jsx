@@ -1600,7 +1600,7 @@ function Cosmetics() {
               </div>
 
               <p className="ocr-description">
-                拍攝產品正面及背面標籤，自動辨識品牌、
+                拍攝產品正面或背面標籤，自動辨識品牌、
                 名稱、分類、色號與效期資訊。
               </p>
 
