@@ -3046,7 +3046,25 @@ body {
   border-color: #d88c9a;
 }
 
-.palette-compare-upload,
+/* 拍照掃描顏色按鈕 */
+.palette-compare-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #d88c9a;
+  color: white;
+  text-align: center;
+  font-size: 15px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* 再次掃描按鈕 */
 .palette-compare-retry {
   display: block;
   width: 100%;
