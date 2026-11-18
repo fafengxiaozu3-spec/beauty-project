@@ -489,10 +489,9 @@ function Palette() {
         <div className="palette-page">
 
           <div className="palette-intro">
-            <h2>我的專屬色彩收藏</h2>
+            <h2>我的色彩收藏</h2>
             <p>
-              整理你的美妝產品顏色，
-              輕鬆查看每一款色號。
+              輕鬆管理美妝色號，透過 AI 即時辨識是否有相似色
             </p>
           </div>
 
@@ -512,17 +511,17 @@ function Palette() {
             ))}
           </div>
 
-          {/* 色卡總數 */}
-          <div className="palette-count">
-            {loadingColors
-              ? "正在載入色卡..."
-              : loadError
-                ? loadError
-                : `共 ${filteredColors.length} 款顏色`}
-          </div>
-
-          {/* 資料載入完成後才顯示色卡 */}
-          {!loadingColors && !loadError && (
+          {/* 色卡 Loading */}
+          {loadingColors ? (
+            <div className="product-loading">
+              <div className="loading-circle"></div>
+              <p>正在取得你的色卡資料...</p>
+            </div>
+          ) : loadError ? (
+            <div className="palette-empty">
+              <p>{loadError}</p>
+            </div>
+          ) : (
             <>
               {/* 唇彩色卡 */}
               <section className="palette-section">
