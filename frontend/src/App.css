@@ -2943,3 +2943,205 @@ body {
   font-size: 13px;
   color: #a18e95;
 }
+
+
+/* AI 相似色掃描按鈕 */
+.palette-compare-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 50%;
+  background: #d88c9a;
+  color: white;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+
+  /* 讓掃描圖示置中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-compare-fab svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+}
+
+/* 比對視窗背景 */
+.palette-compare-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* 比對視窗 */
+.palette-compare-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 18px;
+  padding: 24px 18px;
+  box-sizing: border-box;
+}
+
+.palette-compare-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.palette-compare-modal h2 {
+  margin: 0 0 10px;
+  font-size: 21px;
+}
+
+.palette-compare-desc,
+.palette-compare-hint {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #777;
+}
+
+.palette-compare-label {
+  display: block;
+  margin: 20px 0 10px;
+  font-weight: 600;
+}
+
+.palette-compare-types {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.palette-compare-types button {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.palette-compare-types button.active {
+  background: #d88c9a;
+  color: white;
+  border-color: #d88c9a;
+}
+
+.palette-compare-upload,
+.palette-compare-retry {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: #d88c9a;
+  color: white;
+  text-align: center;
+  font-size: 15px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.palette-compare-crop-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background: #222;
+  margin: 15px 0;
+}
+
+.palette-compare-zoom {
+  width: 100%;
+  margin: 12px 0;
+}
+
+.palette-compare-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.palette-compare-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.palette-compare-actions button:last-child {
+  background: #d88c9a;
+  color: white;
+}
+
+.palette-compare-loading {
+  text-align: center;
+  color: #777;
+}
+
+.palette-compare-error {
+  color: #c0392b;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.palette-compare-detected,
+.palette-compare-match {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.palette-compare-swatch {
+  flex-shrink: 0;
+  width: 55px;
+  height: 55px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.palette-compare-match {
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+}
+
+.palette-compare-match p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.palette-compare-warning {
+  color: #b56a38;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.palette-compare-no-match {
+  color: #666;
+  line-height: 1.6;
+}
+
+.palette-compare-retry {
+  margin-top: 20px;
+}

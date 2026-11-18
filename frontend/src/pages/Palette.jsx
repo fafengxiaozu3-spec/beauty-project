@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Cropper from "react-easy-crop";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { initLiff } from "../services/liff";
@@ -78,6 +79,51 @@ function getColorGroup(hex) {
 }
 
 
+function hexToLab(hex) {
+  const rgb = [1, 3, 5].map((i) => {
+    let value = parseInt(hex.slice(i, i + 2), 16) / 255;
+
+    return value <= 0.04045
+      ? value / 12.92
+      : ((value + 0.055) / 1.055) ** 2.4;
+  });
+
+  const [r, g, b] = rgb;
+
+  const x = (r * 0.4124564 + g * 0.3575761 + b * 0.1804375) / 0.95047;
+  const y = r * 0.2126729 + g * 0.7151522 + b * 0.072175;
+  const z = (r * 0.0193339 + g * 0.119192 + b * 0.9503041) / 1.08883;
+
+  const f = (t) =>
+    t > 0.0088564517
+      ? Math.cbrt(t)
+      : t / (3 * (6 / 29) ** 2) + 4 / 29;
+
+  const fx = f(x);
+  const fy = f(y);
+  const fz = f(z);
+
+  return [
+    116 * fy - 16,
+    500 * (fx - fy),
+    200 * (fy - fz)
+  ];
+}
+
+function calculateColorDifference(hex1, hex2) {
+  const lab1 = hexToLab(hex1);
+  const lab2 = hexToLab(hex2);
+
+  return Math.sqrt(
+    lab1.reduce(
+      (sum, value, index) =>
+        sum + (value - lab2[index]) ** 2,
+      0
+    )
+  );
+}
+
+
 function Palette() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -96,9 +142,211 @@ function Palette() {
   // 選取的產品
   const [selectedColor, setSelectedColor] = useState(null);
 
+  // AI 相似色比對
+  const [showCompare, setShowCompare] = useState(false);
+  const [compareCategory, setCompareCategory] = useState("唇彩");
+  const [compareImage, setCompareImage] = useState("");
+  const [compareCrop, setCompareCrop] = useState({ x: 0, y: 0 });
+  const [compareZoom, setCompareZoom] = useState(1);
+  const [comparePixels, setComparePixels] = useState(null);
+  const [showCompareCrop, setShowCompareCrop] = useState(false);
+
+  const [comparing, setComparing] = useState(false);
+  const [compareResult, setCompareResult] = useState(null);
+  const [compareError, setCompareError] = useState("");
+
   function toggleMenu() {
     setMenuOpen((prev) => !prev);
   }
+
+  function openCompare() {
+    setCompareCategory("唇彩");
+    setCompareResult(null);
+    setCompareError("");
+    setCompareImage("");
+    setShowCompareCrop(false);
+    setShowCompare(true);
+  }
+
+  function closeCompare() {
+    if (comparing) return;
+
+    setShowCompare(false);
+    setShowCompareCrop(false);
+    setCompareImage("");
+    setCompareResult(null);
+    setCompareError("");
+  }
+
+  function handleCompareImage(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setCompareError("請選擇圖片檔案");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setCompareError("圖片大小不能超過 10 MB");
+      return;
+    }
+
+    setCompareError("");
+    setCompareResult(null);
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setCompareImage(reader.result);
+      setCompareCrop({ x: 0, y: 0 });
+      setCompareZoom(1);
+      setComparePixels(null);
+      setShowCompareCrop(true);
+    };
+
+    reader.onerror = () => {
+      setCompareError("照片讀取失敗，請重新拍攝");
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function getCompareCroppedImage(imageSrc, pixelCrop) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 800;
+        canvas.height = 800;
+
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          reject(new Error("無法處理圖片"));
+          return;
+        }
+
+        ctx.drawImage(
+          image,
+          pixelCrop.x,
+          pixelCrop.y,
+          pixelCrop.width,
+          pixelCrop.height,
+          0,
+          0,
+          800,
+          800
+        );
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("圖片剪裁失敗"));
+              return;
+            }
+
+            resolve(
+              new File([blob], "compare-color.jpg", {
+                type: "image/jpeg"
+              })
+            );
+          },
+          "image/jpeg",
+          0.9
+        );
+      };
+
+      image.onerror = () => reject(new Error("圖片載入失敗"));
+      image.src = imageSrc;
+    });
+  }
+
+  async function confirmCompareCrop() {
+    if (!compareImage || !comparePixels || comparing) return;
+
+    setComparing(true);
+    setCompareError("");
+
+    try {
+      const croppedFile = await getCompareCroppedImage(
+        compareImage,
+        comparePixels
+      );
+
+      setShowCompareCrop(false);
+
+      const userId = localStorage.getItem("lineUserId");
+
+      if (!userId) {
+        throw new Error("無法取得使用者資料，請重新登入");
+      }
+
+      const formData = new FormData();
+      formData.append("image", croppedFile);
+      formData.append(
+        "category",
+        compareCategory === "唇彩" ? "lipstick" : "blush"
+      );
+      formData.append("user_id", userId);
+
+      const response = await fetch(
+        "https://mybeautystudio-backend.onrender.com/api/analyze-color",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || result.error || "AI 顏色辨識失敗"
+        );
+      }
+
+      const detectedHex = result.color?.color_hex;
+
+      if (!/^#[0-9a-fA-F]{6}$/.test(detectedHex || "")) {
+        throw new Error("AI 未能辨識有效的顏色");
+      }
+
+      // 只比較相同類型的產品
+      const sameCategoryColors = colors.filter(
+        (item) => item.category === compareCategory
+      );
+
+      // 計算每個產品與掃描顏色的色差
+      const matches = sameCategoryColors
+        .map((item) => ({
+          ...item,
+          difference: calculateColorDifference(
+            detectedHex,
+            item.color_hex
+          )
+        }))
+        .filter((item) => item.difference <= 10)
+        .sort((a, b) => a.difference - b.difference);
+
+      setCompareResult({
+        category: compareCategory,
+        detectedHex,
+        matches,
+        comparedCount: sameCategoryColors.length
+      });
+
+    } catch (error) {
+      console.error("AI 相似色比對失敗：", error);
+      setCompareError(error.message || "比對失敗，請重新拍攝");
+    } finally {
+      setComparing(false);
+    }
+  }
+
 
   useEffect(() => {
     async function loadColors() {
@@ -356,6 +604,32 @@ function Palette() {
     {selectedColor && (
 
           <>
+            {/* AI 相似色掃描按鈕 */}
+            <button
+              type="button"
+              className="palette-compare-fab"
+              onClick={openCompare}
+              aria-label="AI 相似色掃描"
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+                <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+                <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            </button>
+
             <div
               className="palette-detail-overlay"
               onClick={() => setSelectedColor(null)}
@@ -411,6 +685,201 @@ function Palette() {
           </>
         )}
       </div>
+
+      {/* AI 相似色比對視窗 */}
+      {showCompare && (
+        <div className="palette-compare-overlay">
+          <div className="palette-compare-modal">
+            <button
+              type="button"
+              className="palette-compare-close"
+              onClick={closeCompare}
+              disabled={comparing}
+            >
+              ✕
+            </button>
+
+            <h2>AI 相似色比對</h2>
+            <p className="palette-compare-desc">
+              拍攝想比較的產品顏色，
+              查看色卡中是否已有相近色號。
+            </p>
+
+            {!showCompareCrop && !compareResult && (
+              <>
+                <label className="palette-compare-label">
+                  選擇產品類型
+                </label>
+
+                <div className="palette-compare-types">
+                  {["唇彩", "腮紅"].map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      className={
+                        compareCategory === category ? "active" : ""
+                      }
+                      onClick={() => setCompareCategory(category)}
+                      disabled={comparing}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+
+                <label
+                  htmlFor="palette-compare-photo"
+                  className="palette-compare-upload"
+                >
+                  {comparing ? "AI 辨識中..." : "📷 拍照掃描顏色"}
+                </label>
+
+                <input
+                  id="palette-compare-photo"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCompareImage}
+                  disabled={comparing}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
+
+            {showCompareCrop && compareImage && (
+              <>
+                <p className="palette-compare-hint">
+                  請將剪裁範圍填滿要辨識的顏色，
+                  避免背景影響結果。
+                </p>
+
+                <div className="palette-compare-crop-container">
+                  <Cropper
+                    image={compareImage}
+                    crop={compareCrop}
+                    zoom={compareZoom}
+                    aspect={1}
+                    onCropChange={setCompareCrop}
+                    onZoomChange={setCompareZoom}
+                    onCropComplete={(_, pixels) =>
+                      setComparePixels(pixels)
+                    }
+                  />
+                </div>
+
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.01}
+                  value={compareZoom}
+                  onChange={(e) =>
+                    setCompareZoom(Number(e.target.value))
+                  }
+                  className="palette-compare-zoom"
+                />
+
+                <div className="palette-compare-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowCompareCrop(false)}
+                  >
+                    取消
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={confirmCompareCrop}
+                    disabled={comparing || !comparePixels}
+                  >
+                    確認並辨識
+                  </button>
+                </div>
+              </>
+            )}
+
+            {comparing && (
+              <p className="palette-compare-loading">
+                正在辨識顏色並與色卡比對...
+              </p>
+            )}
+
+            {compareError && (
+              <p className="palette-compare-error">
+                {compareError}
+              </p>
+            )}
+
+            {compareResult && (
+              <div className="palette-compare-result">
+                <h3>比對結果</h3>
+
+                <p>產品類型：{compareResult.category}</p>
+
+                <div className="palette-compare-detected">
+                  <div
+                    className="palette-compare-swatch"
+                    style={{
+                      backgroundColor: compareResult.detectedHex
+                    }}
+                  />
+                  <span>
+                    掃描顏色：{compareResult.detectedHex}
+                  </span>
+                </div>
+
+                {compareResult.matches.length > 0 ? (
+                  <>
+                    <p className="palette-compare-warning">
+                      你的色卡中已有相近的顏色，
+                      購買前可以先比較現有產品！
+                    </p>
+
+                    {compareResult.matches.map((item) => (
+                      <div
+                        className="palette-compare-match"
+                        key={item.id}
+                      >
+                        <div
+                          className="palette-compare-swatch"
+                          style={{
+                            backgroundColor: item.color_hex
+                          }}
+                        />
+
+                        <div>
+                          <strong>{item.product_name}</strong>
+                          <p>{item.brand}</p>
+                          <p>色號：{item.shade}</p>
+                          <p>HEX：{item.color_hex}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <p className="palette-compare-no-match">
+                    {compareResult.comparedCount === 0
+                      ? `目前色卡中沒有${compareResult.category}資料可供比對。`
+                      : "目前沒有找到相近的顏色。"}
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  className="palette-compare-retry"
+                  onClick={() => {
+                    setCompareResult(null);
+                    setCompareError("");
+                  }}
+                >
+                  再次掃描
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
