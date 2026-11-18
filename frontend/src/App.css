@@ -3429,3 +3429,49 @@ body {
 .palette-compare-actions button:last-child {
   color: #fff;
 }
+
+/* =========================
+   AI 產品辨識 Loading
+========================= */
+
+.ocr-loading {
+  width: 100%;
+  padding: 20px 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.ocr-loading p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 14px;
+}
+
+/* 進度條背景 */
+.ocr-loading-track {
+  width: 100%;
+  height: 6px;
+  background-color: #f5e5eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* 移動的粉色長條 */
+.ocr-loading-bar {
+  width: 35%;
+  height: 100%;
+  background-color: #d989a4;
+  border-radius: 10px;
+  animation: ocrLoadingMove 1.5s ease-in-out infinite alternate;
+}
+
+/* 左右移動動畫 */
+@keyframes ocrLoadingMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(185.7%);
+  }
+}

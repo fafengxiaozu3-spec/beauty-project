@@ -1759,11 +1759,14 @@ function Cosmetics() {
 
               {analyzingProduct && (
                 <div className="ocr-loading">
-                  <div className="loading-circle"></div>
                   <p>AI 正在辨識產品資訊，請稍候...</p>
+
+                  <div className="ocr-loading-track">
+                    <div className="ocr-loading-bar"></div>
+                  </div>
                 </div>
               )}
-
+              
               {/* 操作按鈕 */}
               <div className="ocr-actions">
                 <button
